@@ -14,7 +14,7 @@
   --bg-base:       #020617;
 
   /* ── Glass surface (spec §2 + §6) ── */
-  --glass-bg:      rgba(77, 84, 23, 0.45);       /* §6 deep-navy blue tint  */
+  --glass-bg:      rgba(23, 37, 84, 0.45);       /* §6 deep-navy blue tint  */
   --glass-border:  rgba(147, 197, 253, 0.20);    /* §6 light-blue stroke    */
   --glass-blur:    blur(12px) saturate(180%);     /* §2 backdrop filter      */
   --glass-shadow:  0 8px 32px 0 rgba(0,0,0,0.80);/* §2 shadow               */
@@ -47,7 +47,7 @@
   --red-glow:      0 0 14px rgba(239,68,68,0.45);
 
   /* ── Light blue blur accents (§6) ── */
-  --lb-glow:       0 0 18px rgba(147, 218, 253, 0.3), 0 0 36px rgba(147,197,253,0.12);
+  --lb-glow:       0 0 18px rgba(147,197,253,0.30), 0 0 36px rgba(147,197,253,0.12);
   --lb-border:     rgba(147,197,253,0.20);
 
   /* ── Typography (§4) ── */
@@ -83,24 +83,7 @@ body{
   color:var(--text-primary);
   min-height:100vh;overflow-x:hidden;
 }
-.app-footer {
-  width: 100%;
-  padding: 20px 0;
-  display: flex;
-  justify-content: center; /* Horizontal center */
-  align-items: center;     /* Vertical center */
-  margin-top: auto;        /* Pushes footer to bottom if using flex-column */
-}
 
-
-#te {
-  font-size: 0.75rem;       /* Makes it small */
-  color: #94a3b8;          /* A muted slate gray to match the sci-fi theme */
-  text-transform: uppercase; /* Keeps the "terminal" aesthetic */
-  letter-spacing: 0.05em;
-  opacity: 0.8;
-  font-family: 'Courier New', monospace; /* Optional: matches the robot/tech vibe */
-}
 /* ══════════════════════════ INTRO ══════════════════════════ */
 .intro-screen{position:fixed;inset:0;z-index:1000;background:#000;
   display:flex;align-items:center;justify-content:center;
@@ -140,7 +123,7 @@ body{
   animation:slideDown .5s var(--ease-spring) both;
   transition:box-shadow .3s ease;
 }
-.header:hover{box-shadow:var(--glass-shadow),0 0 60px rgba(218, 252, 27, 0.12)}
+.header:hover{box-shadow:var(--glass-shadow),0 0 60px rgba(34,211,238,.12)}
 @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 .vian-active .header{border-top-color:var(--green)}
 
@@ -148,7 +131,7 @@ body{
 .logo-group{display:flex;align-items:center;gap:14px}
 .logo-orb{
   width:46px;height:46px;border-radius:50%;
-  background:linear-gradient(135deg,#0c1d4a,#1a9e00);
+  background:linear-gradient(135deg,#0c1d4a,#172554);
   border:1.5px solid var(--cyan-border);
   display:flex;align-items:center;justify-content:center;
   box-shadow:var(--cyan-box);
@@ -241,7 +224,16 @@ body{
 .webcam-view{width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);border-radius:var(--r-md)}
 
 /* Corner brackets */
-
+.video-container::before,
+.video-container::after{content:'';position:absolute;width:18px;height:18px;z-index:3}
+.video-container::before{
+  top:8px;left:8px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);
+  border-radius:4px 0 0 0;box-shadow:-2px -2px 10px rgba(34,211,238,.50);
+}
+.video-container::after{
+  bottom:8px;right:8px;border-bottom:2px solid var(--blue);border-right:2px solid var(--blue);
+  border-radius:0 0 4px 0;box-shadow:2px 2px 10px rgba(56,189,248,.45);
+}
 
 .vian-overlay{
   position:absolute;top:10px;left:10px;
@@ -252,7 +244,17 @@ body{
 }
 @keyframes overlayPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
 
-
+/* Scan beam */
+.scan-lines-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:var(--r-md);z-index:2}
+.scan-static-line{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,.30),transparent)}
+.scan-beam{
+  position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),rgba(34,211,238,.8),var(--cyan),transparent);
+  box-shadow:0 0 14px rgba(34,211,238,.60),0 0 28px rgba(34,211,238,.25);
+  animation:scanDown 3.5s ease-in-out infinite;
+  filter:var(--cyan-glow);
+}
+@keyframes scanDown{0%{top:0%;opacity:0}8%{opacity:1}92%{opacity:.85}100%{top:100%;opacity:0}}
 
 /* ══════════════════════════ STATS COLUMN ══════════════════════════ */
 .stats-column{display:flex;flex-direction:column;gap:14px}
@@ -307,7 +309,7 @@ body{
 .score-track{height:9px;background:rgba(0,0,0,.55);border-radius:var(--r-full);overflow:hidden;border:1px solid var(--lb-border)}
 .score-fill{height:100%;border-radius:var(--r-full);transition:width 1s cubic-bezier(.25,1,.5,1)}
 .fill-green  {background:linear-gradient(90deg,rgba(74,222,128,.3),var(--green));box-shadow:var(--green-glow)}   /* §3 status green */
-.fill-blue   {background:linear-gradient(90deg,rgba(248, 232, 56, 0.3),var(--blue)); box-shadow:var(--blue-glow)}
+.fill-blue   {background:linear-gradient(90deg,rgba(56,189,248,.3),var(--blue)); box-shadow:var(--blue-glow)}
 .fill-red    {background:linear-gradient(90deg,rgba(239,68,68,.3),var(--red));   box-shadow:var(--red-glow)}
 
 /* Mood */
@@ -451,8 +453,8 @@ body{
 .bubble-user .bubble-sender{color:var(--green)}
 .bubble-ai   .bubble-sender{color:var(--cyan)}
 .bubble-meta{position:absolute;bottom:4px;right:10px;display:flex;align-items:center;gap:3px}
-.bubble-time{font-size:.45rem;color:var(--wa-time);font-family:var(--font-body)}
-.bubble-tick{font-size:.3rem;color:var(--wa-tick);line-height:1}
+.bubble-time{font-size:.58rem;color:var(--wa-time);font-family:var(--font-body)}
+.bubble-tick{font-size:.7rem;color:var(--wa-tick);line-height:1}
 
 /* ── TTS (read-aloud) button inside AI bubble ── */
 .btn-tts{
@@ -513,7 +515,14 @@ body{
 .btn-transmit:active:not(:disabled){transform:scale(.96)}
 .btn-transmit:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
 
-/* ── Mic Button ── */
+/* Chat card fade-out when session done */
+.chat-card-exit {
+  animation: chatFadeOut 0.6s var(--ease-out) forwards;
+}
+@keyframes chatFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(12px); }
+}
 .btn-mic{
   width:42px;height:42px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
@@ -553,13 +562,13 @@ body{
 /* ══════════════════════════ ROBOT MASCOT ══════════════════════════ */
 .robot-mascot{position:relative;display:flex;flex-direction:column;align-items:center;
   filter:drop-shadow(0 0 8px rgba(34,211,238,.55)) drop-shadow(0 0 16px rgba(56,189,248,.30));flex-shrink:0}
-.robot-head{background:linear-gradient(135deg,#0c1d4a,#8e00ae);border:1.5px solid var(--cyan-border);
+.robot-head{background:linear-gradient(135deg,#0c1d4a,#172554);border:1.5px solid var(--cyan-border);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .robot-eyes{display:flex;gap:6px}
 .robot-eye{background:var(--cyan);border-radius:50%;box-shadow:0 0 6px var(--cyan),0 0 12px rgba(34,211,238,.4);animation:robotBlink 3.5s ease-in-out infinite}
 @keyframes robotBlink{0%,88%,100%{transform:scaleY(1)}93%{transform:scaleY(.08)}}
 .robot-mouth{background:rgba(34,211,238,.2);border:1px solid var(--cyan-border);border-radius:3px}
-.robot-body{background:linear-gradient(135deg,#0c1d4a,#caf50c);border:1.5px solid var(--lb-border);
+.robot-body{background:linear-gradient(135deg,#0c1d4a,#0c2a1a);border:1.5px solid var(--lb-border);
   display:flex;align-items:center;justify-content:center}
 .robot-core-ring{border-radius:50%;border:2px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center}
 .robot-core{border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--blue));
