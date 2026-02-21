@@ -1,91 +1,122 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ShieldAlert, User, Camera, AlertTriangle, Fingerprint, Activity } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import {
+  User, Fingerprint, Activity,
+  ShieldAlert, AlertTriangle, Send, Camera,
+  Mic, MicOff, Volume2, VolumeX
+} from 'lucide-react';
 import './index.css';
+import SpaceBackground from './SpaceBackground';
 
-const API_BASE = 'http://localhost:8000';
+/* ════════════════════════════════
+   TEXT-TO-SPEECH HOOK
+════════════════════════════════ */
+function useTTS() {
+  const [speaking,  setSpeaking]  = useState(false);
+  const [activeIdx, setActiveIdx] = useState(null);
+  const uttRef = useRef(null);
 
-/* ── Robot peek — only in assistant bubbles ── */
-function RobotPeek() {
+  // Prime voice list (async in some browsers)
+  useEffect(() => { window.speechSynthesis.getVoices(); }, []);
+
+  const speak = useCallback((text, idx) => {
+    window.speechSynthesis.cancel();
+    if (activeIdx === idx) { setSpeaking(false); setActiveIdx(null); return; }
+
+    const utt = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    const voice  = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('google'))
+                || voices.find(v => v.lang.startsWith('en'))
+                || voices[0];
+    if (voice) utt.voice = voice;
+    utt.rate   = 0.92;
+    utt.pitch  = 0.85;
+    utt.volume = 1;
+    utt.onstart = () => { setSpeaking(true);  setActiveIdx(idx); };
+    utt.onend   = () => { setSpeaking(false); setActiveIdx(null); };
+    utt.onerror = () => { setSpeaking(false); setActiveIdx(null); };
+    uttRef.current = utt;
+    window.speechSynthesis.speak(utt);
+  }, [activeIdx]);
+
+  const stop = useCallback(() => {
+    window.speechSynthesis.cancel();
+    setSpeaking(false); setActiveIdx(null);
+  }, []);
+
+  return { speak, stop, speaking, activeIdx };
+}
+
+/* ════════════════════════════════
+   ROBOT MASCOT
+════════════════════════════════ */
+function RobotMascot({ size = 52 }) {
   return (
-    <div className="robot-peek">
-      <div className="robot-face">
+    <div className="robot-mascot" style={{ width: size, height: size * 1.3 }}>
+      <div className="robot-head" style={{ width: size * 0.7, height: size * 0.55, borderRadius: size * 0.12 }}>
         <div className="robot-eyes">
-          <div className="robot-eye" />
-          <div className="robot-eye" />
+          <div className="robot-eye" style={{ width: size * 0.14, height: size * 0.14 }} />
+          <div className="robot-eye" style={{ width: size * 0.14, height: size * 0.14 }} />
         </div>
-        <div className="robot-mouth" />
+        <div className="robot-mouth" style={{ width: size * 0.32, height: size * 0.06 }} />
       </div>
-      <div className="robot-body" />
+      <div className="robot-body" style={{ width: size * 0.85, height: size * 0.62, borderRadius: size * 0.1 }}>
+        <div className="robot-core-ring" style={{ width: size * 0.35, height: size * 0.35 }}>
+          <div className="robot-core" style={{ width: size * 0.18, height: size * 0.18 }} />
+        </div>
+      </div>
     </div>
   );
 }
 
-/* ── Space Background ── */
-function SpaceBg() {
-  return (
-    <div className="space-bg">
-      <div className="stars-layer" />
-      <div className="stars-layer-2" />
-      <div className="nebula nebula-1" />
-      <div className="nebula nebula-2" />
-      <div className="nebula nebula-3" />
-      <div className="nebula nebula-4" />
-      <div className="planet planet-1" />
-      <div className="planet planet-2" />
-      <div className="planet planet-3" />
-      <div className="planet planet-4" />
-      <div className="planet planet-5" />
-      <div className="shooting-star shoot-1" />
-      <div className="shooting-star shoot-2" />
-      <div className="shooting-star shoot-3" />
-    </div>
-  );
-}
 
-/* ── Identity Badge — shows VIAN or Unknown state ── */
+
+/* ════════════════════════════════
+   IDENTITY BADGE
+════════════════════════════════ */
 function IdentityBadge({ identity, isCritical }) {
-  const isVian    = identity === "VIAN";
-  const isStandby = identity === "STANDBY";
-  const isUnknown = identity === "Unknown Personnel" || identity === "Unknown";
-
+  const isVian    = identity === 'VIAN';
+  const isUnknown = identity === 'Unknown Personnel' || identity === 'Unknown';
+  const cls = isVian ? 'badge-vian' : isUnknown ? 'badge-unknown' : 'badge-standby';
   return (
-    <div className={`identity-badge ${isVian ? 'badge-vian' : isUnknown ? 'badge-unknown' : 'badge-standby'} ${isCritical ? 'badge-critical' : ''}`}>
-      <div className="badge-icon">
-        {isVian
-          ? <Fingerprint size={22} />
-          : isUnknown
-            ? <AlertTriangle size={22} />
-            : <User size={22} />
-        }
+    <div className={`identity-badge ${cls} ${isCritical ? 'badge-critical' : ''}`}>
+      <div className="badge-icon-wrap">
+        {isVian ? <Fingerprint size={22} /> : isUnknown ? <AlertTriangle size={22} /> : <User size={22} />}
       </div>
       <div className="badge-info">
-        <span className="badge-label">PERSONNEL ID</span>
-        <span className={`badge-name ${isVian ? 'name-vian' : isUnknown ? 'name-unknown' : 'name-standby'}`}>
-          {identity}
-        </span>
+        <span className="badge-label-tag">PERSONNEL ID</span>
+        <span className="badge-name">{identity}</span>
         <span className="badge-status">
-          {isVian    ? '● IDENTITY CONFIRMED'    :
-           isUnknown ? '● UNRECOGNISED SUBJECT'  :
-                       '● AWAITING BIOMETRICS'   }
+          {isVian ? '● IDENTITY CONFIRMED' : isUnknown ? '● UNRECOGNISED SUBJECT' : '● AWAITING SACN'}
         </span>
       </div>
     </div>
   );
 }
 
-function App() {
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+const nowTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const API_BASE = 'http://localhost:8000';
+
+/* ════════════════════════════════
+   APP
+════════════════════════════════ */
+export default function App() {
   const [data, setData] = useState({
-    identity: "STANDBY",
-    mood:     "---",
-    score:    0,
-    message:  "System Initializing...",
+    identity: 'STANDBY', mood: '---', score: 0, message: 'System Initializing...',
   });
-  const [loading, setLoading]           = useState(false);
-  const [chatHistory, setChatHistory]   = useState([]);
-  const [input, setInput]               = useState("");
-  const [darkMode, setDarkMode]         = useState(true);
+  const [loading,      setLoading]      = useState(false);
+  const [chat,         setChat]         = useState([]);
+  const [input,        setInput]        = useState('');
+  const [scanFlash,    setScanFlash]    = useState(false);
   const [introVisible, setIntroVisible] = useState(true);
-  const [scanFlash, setScanFlash]       = useState(false);
+
+  // Voice input state
+  const [listening,    setListening]    = useState(false);
+  const [transcript,   setTranscript]   = useState('');
+  const [voiceSupport, setVoiceSupport] = useState(true);
+  const recognitionRef = useRef(null);
 
   const [token] = useState(() => Math.random().toString(36).slice(2, 9));
 
@@ -94,274 +125,320 @@ function App() {
   const chatEndRef    = useRef(null);
   const introVideoRef = useRef(null);
 
-  useEffect(() => {
-    document.body.classList.toggle('light', !darkMode);
-  }, [darkMode]);
+  // TTS
+  const { speak, activeIdx } = useTTS();
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatHistory]);
+  // Auto-scroll chat
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chat]);
 
+  // Camera
   useEffect(() => {
-    if (navigator.mediaDevices?.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => { if (videoRef.current) videoRef.current.srcObject = stream; })
-        .catch(err => console.error('Camera access denied:', err));
-    }
+    navigator.mediaDevices?.getUserMedia({ video: true })
+      .then(s => { if (videoRef.current) videoRef.current.srcObject = s; })
+      .catch(e => console.error('Camera denied:', e));
   }, []);
 
-  const skipIntro = () => {
-    if (introVideoRef.current) introVideoRef.current.pause();
-    setIntroVisible(false);
-  };
+  // Speech Recognition
+  useEffect(() => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setVoiceSupport(false); return; }
 
-  // ── Biometric Scan ──────────────────────────────────────────
-  const scanVian = async () => {
-    setLoading(true);
-    setScanFlash(true);
-    setTimeout(() => setScanFlash(false), 600);
+    const rec = new SR();
+    rec.continuous     = true;
+    rec.interimResults = true;
+    rec.lang           = 'en-US';
 
-    try {
-      const context = canvasRef.current.getContext('2d');
-      context.drawImage(videoRef.current, 0, 0, 400, 300);
-      const imageData = canvasRef.current.toDataURL('image/jpeg');
-
-      const res = await fetch(`${API_BASE}/analyze`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ image: imageData }),
-      });
-      const result = await res.json();
-
-      setData({
-        identity: result.identity || 'Unknown',
-        mood:     result.mood     || 'neutral',
-        score:    result.score    ?? 0,
-        message:  result.message  || 'Analysis complete.',
-      });
-
-      // Post a scan result message into chat
-      const isVian = result.identity === 'VIAN';
-      setChatHistory(prev => [...prev, {
-        role:    'assistant',
-        content: isVian
-          ? `Identity confirmed: VIAN. Affect detected — ${(result.mood || 'neutral').toUpperCase()}. Stress Index: ${result.score}/20. Monitoring active.`
-          : `Unrecognised biometric signature. Stress Index: ${result.score}/20. Proceeding as anonymous subject.`,
-      }]);
-
-      // Critical alert
-      if (result.score >= 12) {
-        setChatHistory(prev => [...prev, {
-          role:    'assistant',
-          content: `⚠ ALERT: Elevated ${(result.mood || '').toUpperCase()} detected. ${result.identity}, please report your current status immediately.`,
-        }]);
+    rec.onresult = (e) => {
+      let interim = '', final = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        e.results[i].isFinal ? (final += t) : (interim += t);
       }
-    } catch (err) {
-      console.error(err);
-      setData(prev => ({ ...prev, message: 'CONNECTION ERROR' }));
-      setChatHistory(prev => [...prev, {
-        role:    'assistant',
-        content: 'Biometric uplink failed. Check backend connection on port 8000.',
-      }]);
+      setTranscript(interim);
+      if (final) { setInput(prev => (prev + ' ' + final).trim()); setTranscript(''); }
+    };
+    rec.onerror = () => { setListening(false); setTranscript(''); };
+    rec.onend   = () => { setListening(prev => { if (prev) rec.start(); return prev; }); };
+
+    recognitionRef.current = rec;
+    return () => rec.abort();
+  }, []);
+
+  const toggleMic = useCallback(() => {
+    const rec = recognitionRef.current;
+    if (!rec) return;
+    if (listening) { rec.stop(); setListening(false); setTranscript(''); }
+    else { try { rec.start(); setListening(true); } catch (e) { console.warn(e); } }
+  }, [listening]);
+
+  /* handleSendToBackend — ready for axios/fetch */
+  const handleSendToBackend = useCallback(async (text) => {
+    console.log('[AstroFreud] voice/text →', text);
+    // Uncomment to activate:
+    // const res = await fetch(`${API_BASE}/voice`, {
+    //   method: 'POST', headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ transcript: text, identity: data.identity, token }),
+    // });
+    // return (await res.json()).message;
+    return null;
+  }, [data.identity, token]);
+
+  const skipIntro = () => { introVideoRef.current?.pause(); setIntroVisible(false); };
+
+  /* ── Biometric scan ── */
+  const scanVian = async () => {
+    setLoading(true); setScanFlash(true);
+    setTimeout(() => setScanFlash(false), 600);
+    try {
+      const ctx = canvasRef.current.getContext('2d');
+      ctx.drawImage(videoRef.current, 0, 0, 400, 300);
+      const img = canvasRef.current.toDataURL('image/jpeg');
+      const res = await fetch(`${API_BASE}/analyze`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: img }),
+      });
+      const r = await res.json();
+      setData({ identity: r.identity || 'Unknown', mood: r.mood || 'neutral', score: r.score ?? 0, message: r.message || '' });
+      addMsg('assistant',
+        r.identity === 'VIAN'
+          ? `Identity confirmed: VIAN. Affect — ${(r.mood || 'neutral').toUpperCase()}. Stress Index: ${r.score}/20. Monitoring active.`
+          : `Unrecognised . Stress Index: ${r.score}/20. Proceeding as anonymous subject.`
+      );
+      if (r.score >= 12) addMsg('assistant', `⚠ ALERT: Elevated ${(r.mood || '').toUpperCase()} detected. ${r.identity}, report status immediately.`);
+    } catch {
+      setData(p => ({ ...p, message: 'CONNECTION ERROR' }));
+      addMsg('assistant', 'uplink failed. Check backend on port 8000.');
     }
     setLoading(false);
   };
 
-  // ── Send Chat Message ───────────────────────────────────────
+  /* ── Chat ── */
+  const addMsg = (role, content) => setChat(p => [...p, { role, content, time: nowTime() }]);
+
   const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage = { role: 'user', content: input };
-    setChatHistory(prev => [...prev, userMessage]);
+    e?.preventDefault();
+    const txt = input.trim();
+    if (!txt) return;
+    if (listening) toggleMic();
+    addMsg('user', txt);
     setInput('');
-
+    const voiceReply = await handleSendToBackend(txt);
     try {
-      const identityParam =
-        data.identity !== 'STANDBY' && data.identity !== 'Unknown Personnel'
-          ? data.identity
-          : 'Unknown';
+      const id = data.identity !== 'STANDBY' && data.identity !== 'Unknown Personnel' ? data.identity : 'Unknown';
+      const res = await fetch(`${API_BASE}/chat?identity=${encodeURIComponent(id)}&token=${token}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...chat, { role: 'user', content: txt }] }),
+      });
+      const d = await res.json();
+      if (d.message) addMsg('assistant', d.message);
+      else if (voiceReply) addMsg('assistant', voiceReply);
 
-      const res = await fetch(
-        `${API_BASE}/chat?identity=${encodeURIComponent(identityParam)}&token=${token}`,
-        {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ messages: [...chatHistory, userMessage] }),
-        }
-      );
-      const chatData = await res.json();
-      if (chatData.message) {
-        setChatHistory(prev => [...prev, { role: 'assistant', content: chatData.message }]);
+      // Backend signals end of psych session → full page reset
+      if (d.phase === 'done') {
+        setTimeout(() => window.location.reload(), 3200);
       }
-    } catch (err) {
-      console.error(err);
-      setChatHistory(prev => [...prev, { role: 'assistant', content: 'Uplink failure. System offline.' }]);
+    } catch {
+      addMsg('assistant', voiceReply || 'Uplink failure. System offline.');
     }
   };
 
-  const isCritical = data.score >= 12;
-  const isVian     = data.identity === 'VIAN';
+  const onKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(e); };
 
+  /* ── Derived ── */
+  const isCritical  = data.score >= 12;
+  const isVian      = data.identity === 'VIAN';
+  const fillCls     = isCritical ? 'fill-red' : isVian ? 'fill-green' : 'fill-blue';
+  const scoreNumCls = isCritical ? 'text-red'  : isVian ? 'text-green' : 'text-blue';
+
+  /* ════════════════════════════════
+     RENDER
+  ════════════════════════════════ */
   return (
     <>
-      {/* Intro Video */}
+      {/* Intro */}
       <div className={`intro-screen ${!introVisible ? 'hidden' : ''}`}>
-        <video
-          ref={introVideoRef}
-          className="intro-video"
-          src="/intro.mp4"
-          autoPlay
-          playsInline
-          onEnded={() => setIntroVisible(false)}
-        />
+        <video ref={introVideoRef} className="intro-video" src="/intro.mp4"
+          autoPlay playsInline onEnded={() => setIntroVisible(false)} />
         <button className="intro-skip" onClick={skipIntro}>SKIP INTRO ▶</button>
       </div>
 
-      <SpaceBg />
+      <SpaceBackground />
 
       <div className={`main-wrapper ${isCritical ? 'critical-active' : ''} ${isVian ? 'vian-active' : ''}`}>
         <div className="container">
 
-          {/* Header */}
+          {/* ── Header ── */}
           <header className="header">
             <div className="logo-group">
-              <img src="/logo.png" alt="AstroFreud" className="logo-img" />
+              <div className="logo-orb">
+                <img src="/logo.png" alt="AstroFreud" className="logo-img" />
+              </div>
               <div className="brand-text">
                 <h1 className="title">AstroFreud</h1>
-                <span className="version">v0 // COMMAND_HUB</span>
+                <span className="version">v0</span>
               </div>
             </div>
-
             <div className="header-right">
-              {/* Connection status dot */}
               <div className="conn-status">
-                <span className="conn-dot" />
-                <span className="conn-label">BACKEND :8000</span>
+                <span className="conn-dot" /><span className="conn-label">BACKEND : 8000</span>
               </div>
-
-              <button className="theme-toggle" onClick={() => setDarkMode(d => !d)}>
-                <span className="theme-toggle-icon">{darkMode ? '☀' : '🌙'}</span>
-                {darkMode ? 'LIGHT' : 'DARK'}
-              </button>
-
               {isCritical && (
                 <div className="warning-label">
-                  <AlertTriangle size={13} className="pulse-icon" />
+                  <AlertTriangle size={13} className="spin-icon" />
                   <span>EVALUATION REQUIRED</span>
                 </div>
               )}
             </div>
           </header>
 
-          {/* Dashboard */}
+          {/* ── Dashboard grid ── */}
           <div className="dashboard-grid">
 
-            {/* Camera Card */}
+            {/* Camera */}
             <div className={`card camera-card ${scanFlash ? 'scan-flash' : ''}`}>
-              <div className="card-label"><Camera size={13} /> LIVE BIOMETRICS</div>
+              <div className="card-label"><Camera size={13} /> LIVE </div>
               <div className="video-container">
-                <div className="scanner-line" />
+               
                 {isVian && <div className="vian-overlay">✓ VIAN</div>}
                 <video ref={videoRef} autoPlay playsInline muted className="webcam-view" />
               </div>
               <canvas ref={canvasRef} style={{ display: 'none' }} width="400" height="300" />
             </div>
 
-            {/* Stats Card */}
+            {/* Stats */}
             <div className="stats-column">
-              <div className={`card stat-card ${isCritical ? 'border-red' : isVian ? 'border-vian' : 'border-default'}`}>
-
-                {/* Identity Badge */}
+              <div className={`card stat-card ${isCritical ? 'border-red' : isVian ? 'border-vian' : ''}`}>
                 <IdentityBadge identity={data.identity} isCritical={isCritical} />
 
-                {/* Score */}
                 <div className="score-block">
-                  <div className="score-row">
-                    <Activity size={14} className="score-icon" />
-                    <span className="score-label-top">STRESS INDEX</span>
+                  <div className="score-header">
+                    <Activity size={13} className="score-icon" />
+                    <span className="score-label">STRESS INDEX</span>
+                    <span className={`score-num ${scoreNumCls}`}>{data.score}/20</span>
                   </div>
-                  <div className="score-bar-wrap">
-                    <div
-                      className={`score-bar-fill ${isCritical ? 'fill-red' : isVian ? 'fill-green' : 'fill-blue'}`}
-                      style={{ width: `${(data.score / 20) * 100}%` }}
-                    />
-                  </div>
-                  <div className="score-nums">
-                    <span className={`score-number ${isCritical ? 'text-red' : isVian ? 'text-green' : 'text-blue'}`}>
-                      {data.score}
-                    </span>
-                    <span className="score-max">/20</span>
+                  <div className="score-track">
+                    <div className={`score-fill ${fillCls}`} style={{ width: `${(data.score / 20) * 100}%` }} />
                   </div>
                 </div>
 
-                {/* Mood */}
-                <div className="mood-row">
-                  <span className="mood-label">AFFECT</span>
-                  <span className={`mood-value mood-${data.mood.toLowerCase()}`}>
-                    {data.mood.toUpperCase()}
-                  </span>
-                </div>
+                {data.mood !== '---' && (
+                  <div className="mood-row">
+                    <span className="mood-label">AFFECT</span>
+                    <span className="mood-value">{data.mood.toUpperCase()}</span>
+                  </div>
+                )}
 
-                {/* Scan Button */}
-                <button
-                  onClick={scanVian}
-                  disabled={loading}
-                  className={`action-button ${isCritical ? 'btn-red' : 'btn-purple'}`}
-                >
-                  {loading
-                    ? <><span className="spinner" /> CALIBRATING...</>
-                    : <><Fingerprint size={14} /> INITIATE SCAN</>
-                  }
+                <button className={`btn-scan ${isCritical ? 'btn-scan-red' : ''}`}
+                  onClick={scanVian} disabled={loading}>
+                  {loading ? <><span className="spinner" /> CALIBRATING...</> : <><Fingerprint size={14} /> INITIATE SCAN</>}
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Chat Terminal */}
-          <div className="card chat-container">
-            <div className="card-label"><ShieldAlert size={13} /> PSYCH-LINK TERMINAL
-              {isVian && <span className="vian-tag">LINKED: VIAN</span>}
+          {/* ── Psych-Link Terminal — only shown after detection ── */}
+          {data.identity !== 'STANDBY' && <div className="card chat-card">
+
+            {/* WA header bar */}
+            <div className="chat-header-bar">
+              <div className="chat-header-left">
+                <div className="chat-avatar"><RobotMascot size={26} /></div>
+                <div className="chat-contact-info">
+                  <span className="chat-contact-name">ARES_AI // PSYCH-LINK</span>
+                  <span className="chat-contact-status">{listening ? 'listening...' : 'online'}</span>
+                </div>
+              </div>
+              <div className="chat-header-icons">
+                {isVian && <span className="vian-tag">LINKED: VIAN</span>}
+                <ShieldAlert size={15} color="#94a3b8" />
+              </div>
             </div>
 
+            {/* Messages */}
             <div className="chat-history">
-              {chatHistory.length === 0 && (
+              {chat.length === 0 ? (
                 <div className="empty-chat">
-                  <div className="empty-icon">◉</div>
-                  <div>Awaiting biometric scan to initialise session...</div>
+                  <div className="empty-dot">◉</div>
+                  <span>Awaiting biometric scan to initialise session...</span>
+                  <div className="mascot-corner"><RobotMascot size={52} /></div>
                 </div>
+              ) : (
+                <>
+                  <div className="date-divider">
+                    <span>{new Date().toLocaleDateString([], { weekday:'long', month:'short', day:'numeric' })}</span>
+                  </div>
+                  {chat.map((m, i) => {
+                    const isPlaying = activeIdx === i;
+                    return (
+                      <div key={i} className={`bubble-wrap ${m.role === 'user' ? 'bubble-right' : 'bubble-left'}`}>
+                        {m.role === 'assistant' && <RobotMascot size={26} />}
+                        <div className={`bubble ${m.role === 'user' ? 'bubble-user' : 'bubble-ai'}`}>
+                          <span className="bubble-sender">
+                            {m.role === 'user' ? (data.identity !== 'STANDBY' ? data.identity : 'CREW') : 'ARES_AI'}
+                          </span>
+                          <p>{m.content}</p>
+                          <div className="bubble-meta">
+                            <span className="bubble-time">{m.time}</span>
+                            {m.role === 'user' && <span className="bubble-tick">✓✓</span>}
+                            {m.role === 'assistant' && (
+                              <button
+                                className={`btn-tts ${isPlaying ? 'tts-active' : ''}`}
+                                onClick={() => speak(m.content, i)}
+                                title={isPlaying ? 'Stop' : 'Read aloud'}
+                              >
+                                {isPlaying ? <VolumeX size={11} /> : <Volume2 size={11} />}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div ref={chatEndRef} />
+                </>
               )}
-              {chatHistory.map((m, i) => (
-                <div key={i} className={`chat-bubble ${m.role === 'user' ? 'user' : 'assistant'}`}>
-                  {m.role === 'assistant' && <RobotPeek />}
-                  <span className="sender-tag">
-                    {m.role === 'user'
-                      ? (data.identity !== 'STANDBY' ? data.identity : 'CREW')
-                      : 'ARES_AI'}
-                  </span>
-                  <p>{m.content}</p>
-                </div>
-              ))}
-              <div ref={chatEndRef} />
             </div>
 
-            <form onSubmit={sendMessage} className="chat-input-area">
+            {/* Live transcript strip */}
+            {listening && (
+              <div className="transcript-strip">
+                <span className="transcript-dot" />
+                <span>{transcript || 'Listening for voice input...'}</span>
+              </div>
+            )}
+
+            {/* Input bar */}
+            <form className="chat-input-area" onSubmit={sendMessage}>
+              {voiceSupport ? (
+                <button type="button" className={`btn-mic ${listening ? 'listening' : ''}`}
+                  onClick={toggleMic} title={listening ? 'Stop mic' : 'Voice input'}>
+                  {listening ? <MicOff size={16} /> : <Mic size={16} />}
+                </button>
+              ) : (
+                <button type="button" className="btn-mic" disabled title="Not supported">
+                  <Mic size={16} />
+                </button>
+              )}
+
               <input
                 className="chat-input"
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={isVian ? `VIAN — input mission report...` : 'Input mission status report...'}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={onKeyDown}
+                placeholder={listening ? 'Dictating... press send when ready' : 'Message ARES_AI...'}
               />
-              <button className="send-btn" type="submit" disabled={!input.trim()}>
-                TRANSMIT
+
+              <button className="btn-transmit" type="submit" disabled={!input.trim()}>
+                <Send size={16} />
               </button>
             </form>
-          </div>
 
+          </div>}
         </div>
       </div>
+      <footer className="app-footer">
+        <span id="te">created @brisHack 2026 by Vian, Shankar, Thiruvel, Thrijwal</span>
+      </footer>
     </>
   );
 }
-
-export default App;
