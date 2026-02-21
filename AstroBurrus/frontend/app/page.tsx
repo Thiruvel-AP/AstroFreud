@@ -43,7 +43,6 @@ export default function Home() {
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [invertCamera, setInvertCamera] = useState(false)
 
   const handleIntroComplete = useCallback(() => {
     setShowIntro(false)
@@ -171,20 +170,11 @@ export default function Home() {
           {/* Dashboard Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-6">
             {/* Camera */}
-            <div className="relative">
-              <CameraCard
-                videoRef={videoRef}
-                canvasRef={canvasRef}
-                isCritical={isCritical}
-                inverted={invertCamera}
-              />
-              <button
-                className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs"
-                onClick={() => setInvertCamera((v) => !v)}
-              >
-                {invertCamera ? 'Normal' : 'Invert'}
-              </button>
-            </div>
+            <CameraCard
+              videoRef={videoRef}
+              canvasRef={canvasRef}
+              isCritical={isCritical}
+            />
 
             {/* Stats */}
             <StatsCard

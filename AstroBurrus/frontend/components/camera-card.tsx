@@ -7,10 +7,9 @@ interface CameraCardProps {
   videoRef: React.RefObject<HTMLVideoElement | null>
   canvasRef: React.RefObject<HTMLCanvasElement | null>
   isCritical: boolean
-  inverted?: boolean // flip horizontally when true
 }
 
-export function CameraCard({ videoRef, canvasRef, isCritical, inverted = false }: CameraCardProps) {
+export function CameraCard({ videoRef, canvasRef, isCritical }: CameraCardProps) {
   const scanLineRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -85,7 +84,6 @@ export function CameraCard({ videoRef, canvasRef, isCritical, inverted = false }
           playsInline
           muted
           className="w-full h-full object-cover"
-          style={{ transform: inverted ? 'scaleX(-1)' : 'none' }}
         />
         <canvas ref={canvasRef} className="hidden" width={400} height={300} />
         {/* Overlay grid */}
