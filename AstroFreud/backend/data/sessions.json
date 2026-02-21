@@ -1,0 +1,196 @@
+{
+  "unknown_89b7vgx": {
+    "current_q_index": 0,
+    "phase": "questioning",
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "final_report": "",
+    "display_identity": "unknown_89b7vgx"
+  },
+  "unknown_9ipe8s8": {
+    "current_q_index": 4,
+    "phase": "followup",
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": "good",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "1": {
+        "question": "Are you experiencing any difficulty focusing on mission objectives?",
+        "answer": "no",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "2": {
+        "question": "Do you feel a sense of disconnection from the crew or mission control?",
+        "answer": "no",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "3": {
+        "question": "How would you describe your emotional state compared to mission launch day?",
+        "answer": "its okaish",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      }
+    },
+    "followup_question": "Have you experienced any similar sensations during previous space missions or in your daily life on Earth?",
+    "final_report": "",
+    "display_identity": "unknown_9ipe8s8"
+  },
+  "unknown_cwxgvku": {
+    "current_q_index": 4,
+    "phase": "followup",
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": "good",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "1": {
+        "question": "Are you experiencing any difficulty focusing on mission objectives?",
+        "answer": "no",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "2": {
+        "question": "Do you feel a sense of disconnection from the crew or mission control?",
+        "answer": "no",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "3": {
+        "question": "How would you describe your emotional state compared to mission launch day?",
+        "answer": "its good",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      }
+    },
+    "followup_question": "Can you elaborate on what's been occupying your mind when you say \"sav yours\"?",
+    "final_report": "",
+    "display_identity": "unknown_cwxgvku",
+    "followup_count": 5
+  },
+  "unknown_6p37ih0": {
+    "current_q_index": 1,
+    "phase": "questioning",
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": "not good",
+        "score": 12,
+        "situation": "high",
+        "condition": "Call the captain and the ground station"
+      },
+      "1": {
+        "question": "Are you experiencing any difficulty focusing on mission objectives?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "followup_count": 0,
+    "final_report": "",
+    "overall_situation": "low",
+    "display_identity": "unknown_6p37ih0"
+  },
+  "unknown_rawfhhq": {
+    "session_key": "unknown_rawfhhq",
+    "display_identity": "unknown_rawfhhq",
+    "phase": "questioning",
+    "current_q_index": 0,
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "followup_count": 0,
+    "final_report": "",
+    "overall_situation": "low",
+    "user_answer": "I am not soo good ",
+    "reply": "How has your sleep quality been over the last two cycles?",
+    "is_done": false,
+    "score_result": {},
+    "is_relevant": false,
+    "psych_result": {},
+    "pending_log": null
+  },
+  "unknown_o80wd40": {
+    "session_key": "unknown_o80wd40",
+    "display_identity": "unknown_o80wd40",
+    "phase": "questioning",
+    "current_q_index": 0,
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "followup_count": 0,
+    "final_report": "",
+    "overall_situation": "low",
+    "user_answer": "I rejected my crush, because she have a crush on my friend ",
+    "reply": "How has your sleep quality been over the last two cycles?",
+    "is_done": false,
+    "score_result": {},
+    "is_relevant": false,
+    "psych_result": {},
+    "pending_log": null
+  },
+  "unknown_fnpriq3": {
+    "session_key": "unknown_fnpriq3",
+    "display_identity": "unknown_fnpriq3",
+    "phase": "questioning",
+    "current_q_index": 0,
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "followup_count": 0,
+    "final_report": "",
+    "overall_situation": "low",
+    "user_answer": "idiot you are",
+    "reply": "I'm sorry, I didn't quite understand that. Could you answer more specifically?\n\nHow has your sleep quality been over the last two cycles?",
+    "is_done": false,
+    "score_result": {},
+    "is_relevant": false,
+    "psych_result": {},
+    "pending_log": null
+  }
+}

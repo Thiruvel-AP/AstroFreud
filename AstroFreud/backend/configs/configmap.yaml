@@ -1,0 +1,27 @@
+rules:
+  - min: 1
+    max: 5
+    situation: low
+    condition: internal decision
+
+  - min: 6
+    max: 7
+    situation: moderate
+    condition: Call the captain
+
+  - min: 8
+    max: 20
+    situation: high
+    condition: Call the captain and the ground station
+
+googleSearch:
+  privateKey: "8487f68da63f0f648746f7aa8bae6a154277fc3ec1fbe9ad414c03e519bab931"
+
+database:
+  path: data/
+  file: user_data.xlsx
+
+logging:
+  logpath: logs/
+  backendfile: backend.log
+  frontendfile: frontend.log 
