@@ -140,5 +140,57 @@
     "is_relevant": false,
     "psych_result": {},
     "pending_log": null
+  },
+  "unknown_o80wd40": {
+    "session_key": "unknown_o80wd40",
+    "display_identity": "unknown_o80wd40",
+    "phase": "questioning",
+    "current_q_index": 0,
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "followup_count": 0,
+    "final_report": "",
+    "overall_situation": "low",
+    "user_answer": "I rejected my crush, because she have a crush on my friend ",
+    "reply": "How has your sleep quality been over the last two cycles?",
+    "is_done": false,
+    "score_result": {},
+    "is_relevant": false,
+    "psych_result": {},
+    "pending_log": null
+  },
+  "unknown_fnpriq3": {
+    "session_key": "unknown_fnpriq3",
+    "display_identity": "unknown_fnpriq3",
+    "phase": "questioning",
+    "current_q_index": 0,
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "followup_count": 0,
+    "final_report": "",
+    "overall_situation": "low",
+    "user_answer": "idiot you are",
+    "reply": "I'm sorry, I didn't quite understand that. Could you answer more specifically?\n\nHow has your sleep quality been over the last two cycles?",
+    "is_done": false,
+    "score_result": {},
+    "is_relevant": false,
+    "psych_result": {},
+    "pending_log": null
   }
 }

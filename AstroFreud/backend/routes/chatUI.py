@@ -1,42 +1,72 @@
-import ollama
 from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List
+from services.session_store import session_store
+from models.request_models import ChatRequest
+import datetime
+from Agents.Memory import ARESState
+from Agents.CoreAgent import build_ares_graph
 
 router = APIRouter()
 
-class Message(BaseModel):
-    role: str
-    content: str
 
-class ChatRequest(BaseModel):
-    messages: List[Message]
+def _resolve_identity(identity: str, token: str) -> str:
+    identity = (identity or "").strip()
+    if identity and identity not in ("Unknown", "Unknown Personnel", "Error"):
+        return identity
+    return f"unknown_{token}" if token else f"unknown_{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
-psych_protocol = [
-    "How has your sleep quality been over the last two cycles?",
-    "Are you experiencing any difficulty focusing on mission objectives?",
-    "Do you feel a sense of disconnection from the crew or mission control?",
-    "I am processing your responses. Based on our data, I recommend a 15-minute Earth-audio session. Do you agree?"
-]
+def _fresh_state(session_key: str, display_identity: str) -> ARESState:
+    return ARESState(
+        session_key=session_key,
+        display_identity=display_identity,
+        phase="init",
+        current_q_index=0,
+        qa_store={},
+        followup_question="",
+        followup_count=0,
+        final_report="",
+        overall_situation="low",
+        user_answer="",
+        reply="",
+        is_done=False,
+        score_result={},
+        is_relevant=False,
+        psych_result={},
+        pending_log=None,
+    )
 
 @router.post("/chat")
-async def chat(req: ChatRequest):
-    try:
-        user_msgs = [m for m in req.messages if m.role == 'user']
+async def chat(req: ChatRequest, identity: str = "Unknown", token: str = ""):
 
-        if 0 < len(user_msgs) <= 4:
-            response_text = psych_protocol[len(user_msgs) - 1]
-        else:
-            system_prompt = {
-                "role": "system",
-                "content": "You are ARES, a Space Psychiatrist. Be clinical yet empathetic. Keep responses under 3 sentences."
-            }
-            history = [system_prompt] + [m.dict() for m in req.messages]
-            response = ollama.chat(model='llama3', messages=history)
-            response_text = response['message']['content']
+    # ───────Build the graph───────────────────────────────────────────────
+    ares_graph = build_ares_graph()
 
-        return {"message": response_text}
+    # ── resolve identity ──────────────────────────────────────────────────────
+    session_key      = _resolve_identity(identity, token)
+    display_identity = (
+        identity
+        if identity not in ("Unknown", "Unknown Personnel", "Error", "")
+        else session_key
+    )
 
-    except Exception as e:
-        print(f"CRASH IN /CHAT: {e}")
-        return {"message": "Psych-link unstable. Please stand by."}
+    # ── load or create LangGraph state ───────────────────────────────────────
+    state: ARESState = session_store.get(session_key) or _fresh_state(session_key, display_identity)
+
+    # ── inject this turn's user message ──────────────────────────────────────
+    user_answer = req.messages[-1].content if req.messages else ""
+    state = {**state, "user_answer": user_answer}
+
+    # ── run the graph (single turn) ───────────────────────────────────────────
+    result: ARESState = ares_graph.invoke(state)
+
+    # ── persist or wipe session ───────────────────────────────────────────────
+    if result.get("is_done"):
+        print(f"[ARES] Session complete for {session_key}.")
+        session_store.delete(session_key)
+    else:
+        session_store.set(session_key, result)
+
+    return {
+        "identity": display_identity,
+        "message":  result["reply"],
+        "phase":    result["phase"],
+    }
