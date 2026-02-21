@@ -42,7 +42,7 @@ export function CameraCard({ videoRef, canvasRef, isCritical }: CameraCardProps)
         }}
       >
         <Camera size={12} />
-        <span>BIOMETRIC FEED</span>
+        <span>CAMERA FEED</span>
         <div className="ml-auto flex items-center gap-2">
           <Circle size={6} fill={accent} style={{ color: accent }} className="animate-pulse" />
           <span style={{ color: "#5a7098" }}>REC</span>
@@ -109,7 +109,7 @@ export function CameraCard({ videoRef, canvasRef, isCritical }: CameraCardProps)
 
         <div className="absolute bottom-3 left-3 z-20 pointer-events-none">
           <p className="text-[8px] font-mono tracking-wider" style={{ color: `${accent}60` }}>
-            BIOMETRIC SCAN ACTIVE
+           SCAN ACTIVE
           </p>
         </div>
 
