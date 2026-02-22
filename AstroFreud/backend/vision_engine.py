@@ -69,7 +69,7 @@ class ARESVision:
         for p in self.ref_paths:
             print(f"              → {p}  exists={os.path.exists(p)}")
 
-    # ── Pre-processing ────────────────────────────────────────────────────────
+    # Pre-processing 
     def _preprocess(self, frame: np.ndarray) -> np.ndarray:
         if frame is None:
             raise ValueError("Null frame received")
@@ -88,7 +88,7 @@ class ARESVision:
         frame = cv2.cvtColor(ycrcb, cv2.COLOR_YCrCb2BGR)
         return np.ascontiguousarray(frame)
 
-    # ── Detector with automatic fallback ─────────────────────────────────────
+    #  Detector with automatic fallback 
     def _verify(self, frame: np.ndarray, ref: str) -> Optional[dict]:
         for backend in self.DETECTOR_CHAIN:
             try:
@@ -121,7 +121,7 @@ class ARESVision:
                 print(f"[ARES Vision] emotion/{backend} error: {e}")
         return {}
 
-    # ── Adaptive threshold updater ────────────────────────────────────────────
+    #  Adaptive threshold updater 
     def _update_threshold(self, dist: float, verified: bool) -> None:
         if verified:
             self._dist_buf.append(dist)
@@ -133,7 +133,7 @@ class ARESVision:
             self.threshold = round(float(new_t), 4)
             print(f"[ARES Vision] adaptive threshold → {self.threshold:.4f}")
 
-    # ── Emotion smoothing ─────────────────────────────────────────────────────
+    #  Emotion smoothing 
     def _smooth_emotion(self, raw_emo: dict) -> tuple:
         """Average emotion scores across the rolling window, with bias toward strong signals."""
         if not raw_emo:
@@ -146,12 +146,12 @@ class ARESVision:
 
         dominant = max(avg, key=avg.get)
 
-        # ── Hard overrides: if any strong signal passes its threshold in the
+        #  Hard overrides: if any strong signal passes its threshold in the
         #    CURRENT raw frame, don't let the average bury it.
         #    Thresholds tuned for real-world compressed webcam frames.
         OVERRIDES = [
             ("angry",   15),
-            ("sad",     10),   # very lenient — sad faces are subtle
+            ("sad",     10),  
             ("fear",    12),
             
         ]
@@ -164,7 +164,7 @@ class ARESVision:
 
         return dominant, avg
 
-    # ── Public API ────────────────────────────────────────────────────────────
+    # Public API
     def analyze_crew(self, frame: np.ndarray) -> dict:
         try:
             frame    = self._preprocess(frame)
@@ -172,7 +172,7 @@ class ARESVision:
             min_dist = float("inf")
             best_ref = None
 
-            # ── Identity: check all reference images, keep minimum distance ──
+            # Identity: check all reference images, keep minimum distance 
             for ref in self.ref_paths:
                 if not os.path.exists(ref):
                     continue
@@ -193,7 +193,7 @@ class ARESVision:
             print(f"[ARES Vision] best_dist={min_dist:.4f}  "
                   f"threshold={self.threshold:.4f}  identity={identity}")
 
-            # ── Emotion: raw → smooth ─────────────────────────────────────────
+            #  Emotion: raw → smooth 
             raw_emo = self._analyze_emotion(frame)
             mood, smooth_emo = self._smooth_emotion(raw_emo)
 
@@ -215,7 +215,7 @@ class ARESVision:
                 "identity":     identity,
                 "mood":         mood,
                 "score":        score,
-                "stress_index": stress_index,   # continuous 0–16ish
+                "stress_index": stress_index,   
                 "emotion_raw":  raw_emo,
                 "emotion_avg":  smooth_emo,
                 "distance":     round(min_dist, 4) if min_dist < float("inf") else None,

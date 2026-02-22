@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-/* ── Radial glow texture ── */
+/* Radial glow texture */
 function makeGlowTex(hex, size = 512) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
@@ -15,7 +15,7 @@ function makeGlowTex(hex, size = 512) {
   return new THREE.CanvasTexture(c);
 }
 
-/* ── Planet surface texture ── */
+/* Planet surface texture  */
 function makePlanetTex(base, detail, size = 256) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
@@ -36,7 +36,7 @@ function makePlanetTex(base, detail, size = 256) {
   return new THREE.CanvasTexture(c);
 }
 
-/* ── Procedural spaceship ── */
+/*  Procedural spaceship  */
 function makeShip(accent) {
   const grp = new THREE.Group();
   const mat = (hex, op=1) => new THREE.MeshBasicMaterial({ color:hex, transparent:op<1, opacity:op });
@@ -61,9 +61,9 @@ function makeShip(accent) {
   return grp;
 }
 
-/* ════════════════════════════════
-   SpaceBackground
-════════════════════════════════ */
+
+   //SpaceBackground
+
 export default function SpaceBackground() {
   const ref = useRef(null);
 
@@ -81,8 +81,8 @@ export default function SpaceBackground() {
     const camera = new THREE.PerspectiveCamera(70, W/H, 0.1, 3000);
     camera.position.z = 420;
 
-    /* ── Background quad: base + teal TL + indigo BR ── */
-    // We paint a full-screen plane behind everything using a ShaderMaterial
+
+    // We paint a full screen plane behind everything using a ShaderMaterial
     const bgGeo = new THREE.PlaneGeometry(2, 2);
     const bgMat = new THREE.ShaderMaterial({
       depthWrite: false, depthTest: false,
@@ -113,17 +113,16 @@ export default function SpaceBackground() {
     bgMesh.renderOrder = -1;
     scene.add(bgMesh);
 
-    /* ── Starfield — 2800 pts ── */
+    /* Starfield  */
     const N=2800;
     const sPos=new Float32Array(N*3), sCol=new Float32Array(N*3), sPh=new Float32Array(N);
     const pal=[
       new THREE.Color('#e2e8f0'),
-      new THREE.Color('#93c5fd'),   // light-blue
-      new THREE.Color('#22d3ee'),   // cyan
-      new THREE.Color('#a7f3d0'),   // mint
-      new THREE.Color('#818cf8'),   // indigo-light
-      new THREE.Color('#38bdf8'),   // sky-blue
-      new THREE.Color('#c7d2fe'),   // lavender
+      new THREE.Color('#93c5fd'),   
+      new THREE.Color('#22d3ee'),  
+      new THREE.Color('#818cf8'),  
+      new THREE.Color('#38bdf8'),   
+      new THREE.Color('#c7d2fe'),   
     ];
     for(let i=0;i<N;i++){
       const i3=i*3;
@@ -172,7 +171,7 @@ export default function SpaceBackground() {
       g._rot=d.rot; scene.add(g); return g;
     });
 
-    /* ── Spaceships ── */
+    /*  Spaceships */
     const sDefs=[
       {col:0x22d3ee,x:-65, y:92, z:-180,sc:5,  rotZ: 0.15,ph:0.0},
       {col:0x818cf8,x: 205,y:-62,z:-260,sc:3.5,rotZ:-0.08,ph:1.2},
@@ -189,13 +188,13 @@ export default function SpaceBackground() {
       s.add(eg); s._eg=eg; scene.add(s); return s;
     });
 
-    /* ── Nebulas — teal + indigo + blue ── */
+    /* Nebulas */
     const nDefs=[
-      {hex:'#0d9488',x:-390,y:-230,z:-800,sc:720,op:0.16},  // teal
-      {hex:'#1e1b4b',x: 370,y: 210,z:-600,sc:580,op:0.18},  // deep indigo
-      {hex:'#0c4a6e',x:-120,y: 290,z:-500,sc:440,op:0.12},  // dark cyan-blue
-      {hex:'#172554',x:  30,y:  40,z:-900,sc:840,op:0.14},  // navy
-      {hex:'#0f172a',x: 310,y:-290,z:-700,sc:480,op:0.11},  // midnight
+      {hex:'#0d9488',x:-390,y:-230,z:-800,sc:720,op:0.16},  
+      {hex:'#1e1b4b',x: 370,y: 210,z:-600,sc:580,op:0.18},  
+      {hex:'#0c4a6e',x:-120,y: 290,z:-500,sc:440,op:0.12},  
+      {hex:'#172554',x:  30,y:  40,z:-900,sc:840,op:0.14},  
+      {hex:'#0f172a',x: 310,y:-290,z:-700,sc:480,op:0.11},  
     ];
     const nebs=nDefs.map(d=>{
       const sp=new THREE.Sprite(new THREE.SpriteMaterial({
@@ -205,7 +204,7 @@ export default function SpaceBackground() {
       sp._b={x:d.x,y:d.y,op:d.op}; scene.add(sp); return sp;
     });
 
-    /* ── Mouse parallax ── */
+    /* Mouse parallax */
     const mouse={x:0,y:0}, smooth={x:0,y:0};
     const onMove=e=>{ mouse.x=(e.clientX/W-.5)*2; mouse.y=(e.clientY/H-.5)*2; };
     window.addEventListener('mousemove',onMove);
@@ -217,7 +216,7 @@ export default function SpaceBackground() {
     };
     window.addEventListener('resize',onResize);
 
-    /* ── Animate ── */
+    /* Animate  */
     let raf; const clock=new THREE.Clock();
     const animate=()=>{
       raf=requestAnimationFrame(animate);

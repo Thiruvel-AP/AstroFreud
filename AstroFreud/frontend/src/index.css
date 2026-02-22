@@ -1,43 +1,35 @@
-/* ═══════════════════════════════════════════════════════
-   ASTROFREUD — Bluish Glass · Exact spec tokens
-   Surface rgba(23,37,84,0.45) · border rgba(147,197,253,0.2)
-   Typography: #FFF headers · #94A3B8 labels · #CBD5E1 terminal
-═══════════════════════════════════════════════════════ */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap');
 
-/* ══════════════════════════
-   DESIGN TOKENS
-══════════════════════════ */
 :root {
   /* ── Background ── */
   --bg-base:       #000000;
 
   /* ── Glass surface (spec §2 + §6) ── */
-  --glass-bg:      rgba(79, 133, 72, 0.45);       /* §6 deep-navy blue tint  */
-  --glass-border:  rgba(0, 70, 151, 0.2);    /* §6 light-blue stroke    */
-  --glass-blur:    blur(12px) saturate(180%);     /* §2 backdrop filter      */
-  --glass-shadow:  0 8px 32px 0 rgba(0,0,0,0.80);/* §2 shadow               */
-
+  --glass-bg:      rgba(79, 133, 72, 0.45);      
+  --glass-border:  rgba(0, 70, 151, 0.2);    
+  --glass-blur:    blur(12px) saturate(180%);    
+  --glass-shadow:  0 8px 32px 0 rgba(0,0,0,0.80);
   /* ── Functional accents ── */
-  --cyan:          #d9f600;                       /* §3 primary cyan         */
-  --cyan-glow:     drop-shadow(0 0 8px #22d3ee); /* §3 neon effect          */
+  --cyan:          #d9f600;                       
+  --cyan-glow:     drop-shadow(0 0 8px #22d3ee);
   --cyan-box:      0 0 16px rgba(34,211,238,0.45),0 0 32px rgba(34,211,238,0.20);
   --cyan-dim:      rgba(34,211,238,0.10);
   --cyan-border:   rgba(34,211,238,0.40);
 
-  --green:         #4ade80;                       /* §3 status green         */
+  --green:         #4ade80;                       
   --green-dim:     rgba(74,222,128,0.10);
   --green-border:  rgba(74,222,128,0.38);
   --green-glow:    0 0 14px rgba(74,222,128,0.50);
 
-  --blue:          #034efe;                       /* §3 status blue          */
+  --blue:          #034efe;                      
   --blue-dim:      rgba(56,189,248,0.10);
   --blue-border:   rgba(56,189,248,0.38);
   --blue-glow:     0 0 14px rgba(56,189,248,0.45);
 
-  --mint-bg:       rgba(0, 0, 0, 0.649);        /* §3 personnel ID 30%     */
-  --mint-text:     #ecfdf5;                       /* §3 personnel text       */
+  --mint-bg:       rgba(0, 0, 0, 0.649);        
+  --mint-text:     #ecfdf5;                     
   --mint-border:   rgba(167,243,208,0.28);
 
   --red:           #ef4444;
@@ -51,11 +43,10 @@
   --lb-border:     rgba(147,197,253,0.20);
 
   /* ── Typography (§4) ── */
-  --text-header:   #ffffff;                       /* §4 headers              */
-  --text-primary:  #f1f5f9;                       /* body near-white         */
-  --text-secondary:#94a3b8;                       /* §4 sub-labels           */
-  --text-terminal: #cbd5e1;                       /* §4 terminal text        */
-  --text-muted:    #334155;
+  --text-header:   #ffffff;                      
+  --text-primary:  #f1f5f9;                       
+  --text-secondary:#94a3b8;                      
+  --text-terminal: #cbd5e1;                        
 
   /* ── WA Chat ── */
   --wa-bg:         #0b1221;
@@ -65,7 +56,7 @@
   --wa-tick:       #38bdf8;
   --wa-time:       rgba(148,163,184,0.60);
 
-  /* ── Radii / misc ── */
+  
   --r-sm:8px; --r-md:14px; --r-lg:20px; --r-xl:26px; --r-full:999px;
   --font-display:'Orbitron',monospace;
   --font-body:   'Rajdhani',sans-serif;
@@ -87,19 +78,19 @@ body{
   width: 100%;
   padding: 20px 0;
   display: flex;
-  justify-content: center; /* Horizontal center */
-  align-items: center;     /* Vertical center */
-  margin-top: auto;        /* Pushes footer to bottom if using flex-column */
+  justify-content: center; 
+  align-items: center;     
+  margin-top: auto;       
 }
 
 /* The Text Style */
 #te {
-  font-size: 0.75rem;       /* Makes it small */
-  color: #94a3b8;          /* A muted slate gray to match the sci-fi theme */
-  text-transform: uppercase; /* Keeps the "terminal" aesthetic */
+  font-size: 0.75rem;      
+  color: #94a3b8;          
+  text-transform: uppercase; 
   letter-spacing: 0.05em;
   opacity: 0.8;
-  font-family: 'Courier New', monospace; /* Optional: matches the robot/tech vibe */
+  font-family: 'Courier New', monospace; 
 }
 
 /* ══════════════════════════ INTRO ══════════════════════════ */
@@ -163,7 +154,7 @@ body{
 .brand-text{display:flex;flex-direction:column;gap:2px}
 .title{
   font-family:var(--font-display);font-size:1.4rem;font-weight:700;
-  letter-spacing:.10em;                           /* §4 headers 0.1em */
+  letter-spacing:.10em;                           
   text-transform:uppercase;color:var(--text-header);
   transition:color .4s ease;
 }
@@ -205,12 +196,12 @@ body{
 
 /* ══════════════════════════ GLASS CARD BASE ══════════════════════════ */
 .card{
-  background:var(--glass-bg);                     /* §2 + §6 surface */
-  backdrop-filter:var(--glass-blur);              /* §2 blur+saturate */
+  background:var(--glass-bg);                    
+  backdrop-filter:var(--glass-blur);              
   -webkit-backdrop-filter:var(--glass-blur);
-  border:1px solid var(--lb-border);              /* §6 lb stroke */
+  border:1px solid var(--lb-border);              
   border-radius:var(--r-lg);padding:20px;
-  box-shadow:var(--glass-shadow);                 /* §2 shadow */
+  box-shadow:var(--glass-shadow);                
   transition:transform .35s var(--ease-spring),box-shadow .3s ease,border-color .3s ease;
   animation:cardUp .55s var(--ease-spring) both;
 }
@@ -226,7 +217,7 @@ body{
 .card-label{
   display:flex;align-items:center;gap:8px;
   font-family:var(--font-display);font-size:.52rem;letter-spacing:.22em;
-  color:var(--text-secondary);                    /* §4 sub-labels */
+  color:var(--text-secondary);                    
   margin-bottom:14px;text-transform:uppercase;
 }
 
@@ -286,7 +277,7 @@ body{
 .badge-label-tag{font-family:var(--font-display);font-size:.46rem;letter-spacing:.22em;color:var(--text-secondary)}
 .badge-name{
   font-family:var(--font-display);font-size:1.28rem;font-weight:700;
-  letter-spacing:.10em;color:var(--text-header);               /* §4 white */
+  letter-spacing:.10em;color:var(--text-header);               
 }
 .badge-vian    .badge-name{color:var(--green)}
 .badge-unknown .badge-name{color:var(--red-soft)}
@@ -304,7 +295,7 @@ body{
 
 .score-track{height:9px;background:rgba(0,0,0,.55);border-radius:var(--r-full);overflow:hidden;border:1px solid var(--lb-border)}
 .score-fill{height:100%;border-radius:var(--r-full);transition:width 1s cubic-bezier(.25,1,.5,1)}
-.fill-green  {background:linear-gradient(90deg,rgba(74,222,128,.3),var(--green));box-shadow:var(--green-glow)}   /* §3 status green */
+.fill-green  {background:linear-gradient(90deg,rgba(74,222,128,.3),var(--green));box-shadow:var(--green-glow)}  
 .fill-blue   {background:linear-gradient(90deg,rgba(248, 171, 56, 0.616),var(--blue)); box-shadow:var(--blue-glow)}
 .fill-red    {background:linear-gradient(90deg,rgba(239,68,68,.3),var(--red));   box-shadow:var(--red-glow)}
 
@@ -316,7 +307,7 @@ body{
 .mood-label{font-family:var(--font-display);font-size:.48rem;letter-spacing:.18em;color:var(--text-secondary)}
 .mood-value{font-family:var(--font-display);font-size:.6rem;letter-spacing:.14em;font-weight:600;color:var(--cyan);filter:var(--cyan-glow)}
 
-/* Scan Button — cyan neon §3 */
+/* Scan Button */
 .btn-scan{
   display:flex;align-items:center;justify-content:center;gap:8px;
   width:100%;padding:14px 20px;
@@ -342,9 +333,7 @@ body{
 .spinner{width:14px;height:14px;border:2px solid rgba(34,211,238,.25);
   border-top-color:var(--cyan);border-radius:50%;animation:spin .75s linear infinite;display:inline-block}
 
-/* ══════════════════════════
-   WHATSAPP-STYLE CHAT TERMINAL
-══════════════════════════ */
+
 .chat-card{
   background:var(--glass-bg);
   border-top:2px solid var(--cyan);
@@ -370,7 +359,7 @@ body{
 .chat-contact-info{display:flex;flex-direction:column;gap:1px}
 .chat-contact-name{
   font-family:var(--font-display);font-size:.62rem;
-  letter-spacing:.10em;color:var(--text-header);  /* §4 white */
+  letter-spacing:.10em;color:var(--text-header);  
 }
 .chat-contact-status{
   font-family:var(--font-display);font-size:.42rem;
@@ -389,13 +378,13 @@ body{
   font-size:.42rem;letter-spacing:.14em;padding:2px 10px;border-radius:var(--r-full);
 }
 
-/* Chat history — terminal bg §4 */
+/* Chat history  */
 .chat-history{
   min-height:200px;max-height:280px;overflow-y:auto;
   padding:12px 14px;
   display:flex;flex-direction:column;gap:4px;
   background:var(--wa-bg);
-  color:var(--text-terminal);                    /* §4 terminal text */
+  color:var(--text-terminal);                   
   background-image:
     radial-gradient(circle at 15% 25%, rgba(13,148,136,.05) 0%,transparent 50%),
     radial-gradient(circle at 85% 75%, rgba(30,27,75,.10) 0%,transparent 50%);
@@ -423,7 +412,7 @@ body{
 .bubble{
   position:relative;padding:8px 12px 20px;border-radius:8px;
   font-size:.92rem;line-height:1.5;max-width:100%;word-break:break-word;
-  color:var(--text-terminal);                    /* §4 terminal text */
+  color:var(--text-terminal);                    
 }
 .bubble-user{
   background:var(--wa-sent);
@@ -452,7 +441,7 @@ body{
 .bubble-time{font-size:.45rem;color:var(--wa-time);font-family:var(--font-body)}
 .bubble-tick{font-size:.4rem;color:var(--wa-tick);line-height:1}
 
-/* ── TTS (read-aloud) button inside AI bubble ── */
+/* TTS */
 .btn-tts{
   display:inline-flex;align-items:center;justify-content:center;
   width:20px;height:20px;border-radius:50%;
@@ -470,7 +459,7 @@ body{
   color:var(--cyan);
   box-shadow:0 0 8px rgba(34,211,238,0.40);
 }
-/* Active / playing state — pulses cyan */
+
 .btn-tts.tts-active{
   background:rgba(34,211,238,0.20);
   border-color:var(--cyan);
@@ -483,7 +472,7 @@ body{
   50%    {box-shadow:0 0 18px rgba(34,211,238,.80),0 0 0 6px rgba(34,211,238,.06)}
 }
 
-/* ── WA Input bar ── */
+/*  WA Input bar  */
 .chat-input-area{
   display:flex;align-items:center;gap:10px;padding:10px 14px;
   background:var(--wa-header);border-top:1px solid rgba(147,197,253,.08);
@@ -491,7 +480,7 @@ body{
 .chat-input{
   flex:1;background:rgba(23,37,84,.6);
   border:1px solid var(--lb-border);border-radius:22px;
-  padding:10px 18px;color:var(--text-terminal);  /* §4 terminal text */
+  padding:10px 18px;color:var(--text-terminal);  
   font-family:var(--font-body);font-size:.92rem;
   outline:none;transition:border-color .3s ease,box-shadow .3s ease;
 }
@@ -511,7 +500,7 @@ body{
 .btn-transmit:active:not(:disabled){transform:scale(.96)}
 .btn-transmit:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
 
-/* Chat card fade-out when session done */
+/* Chat card fade-out  */
 .chat-card-exit {
   animation: chatFadeOut 0.6s var(--ease-out) forwards;
 }
@@ -528,7 +517,7 @@ body{
   transition:all .3s var(--ease-spring);flex-shrink:0;
 }
 .btn-mic:hover{border-color:var(--cyan-border);color:var(--cyan);box-shadow:var(--cyan-box)}
-/* Listening state — red glow */
+/* Listening state */
 .btn-mic.listening{
   background:rgba(239,68,68,.15);
   border-color:var(--red-border);
@@ -571,7 +560,7 @@ body{
   box-shadow:var(--cyan-box);animation:corePulse 2s ease-in-out infinite}
 @keyframes corePulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.2);opacity:1}}
 
-/* ══════════════════════════ SCROLLBAR ══════════════════════════ */
+
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(34,211,238,.30);border-radius:2px}
