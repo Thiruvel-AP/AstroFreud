@@ -246,5 +246,86 @@
       "content": "Can you describe what's been keeping you awake during those sleepless nights?"
     },
     "pending_log": null
+  },
+  "unknown_isa9w56": {
+    "session_key": "unknown_isa9w56",
+    "display_identity": "unknown_isa9w56",
+    "phase": "questioning",
+    "current_q_index": 1,
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": "good",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "1": {
+        "question": "Are you experiencing any difficulty focusing on mission objectives?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "followup_count": 0,
+    "final_report": "",
+    "overall_situation": "low",
+    "user_answer": "good",
+    "reply": "Are you experiencing any difficulty focusing on mission objectives?",
+    "is_done": false,
+    "score_result": {
+      "score": 4,
+      "situation": "low",
+      "condition": "internal decision"
+    },
+    "is_relevant": true,
+    "psych_result": {},
+    "pending_log": null
+  },
+  "unknown_2env01w": {
+    "session_key": "unknown_2env01w",
+    "display_identity": "unknown_2env01w",
+    "phase": "questioning",
+    "current_q_index": 1,
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      },
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": "not so aure",
+        "score": 12,
+        "situation": "high",
+        "condition": "Call the captain and the ground station"
+      },
+      "1": {
+        "question": "Are you experiencing any difficulty focusing on mission objectives?",
+        "answer": null,
+        "score": null,
+        "situation": null,
+        "condition": null
+      }
+    },
+    "followup_question": "",
+    "followup_count": 0,
+    "final_report": "",
+    "overall_situation": "low",
+    "user_answer": "not so aure",
+    "reply": "Are you experiencing any difficulty focusing on mission objectives?",
+    "is_done": false,
+    "score_result": {
+      "score": 12,
+      "situation": "high",
+      "condition": "Call the captain and the ground station"
+    },
+    "is_relevant": true,
+    "psych_result": {},
+    "pending_log": null
   }
 }

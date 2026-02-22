@@ -13,7 +13,6 @@ function useTTS() {
   const [activeIdx, setActiveIdx] = useState(null);
   const uttRef = useRef(null);
 
-  // Prime voice list (async in some browsers)
   useEffect(() => { window.speechSynthesis.getVoices(); }, []);
 
   const speak = useCallback((text, idx) => {
@@ -65,6 +64,20 @@ function RobotMascot({ size = 52 }) {
 }
 
 
+function TypingBubble() {
+  return (
+    <div className="bubble-wrap bubble-left">
+      <RobotMascot size={26} />
+      <div className="bubble bubble-ai typing-bubble">
+        <span className="bubble-sender">AstroFreud_AI</span>
+        <div className="typing-dots">
+          <span /><span /><span />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 function IdentityBadge({ identity, isCritical }) {
   const isVian    = identity === 'VIAN';
@@ -101,6 +114,7 @@ export default function App() {
   const [scanFlash,    setScanFlash]    = useState(false);
   const [introVisible, setIntroVisible] = useState(true);
   const [sessionDone,  setSessionDone]  = useState(false);
+  const [isTyping,     setIsTyping]     = useState(false);   // ← NEW
 
   // Voice input state
   const [listening,    setListening]    = useState(false);
@@ -115,20 +129,16 @@ export default function App() {
   const chatEndRef    = useRef(null);
   const introVideoRef = useRef(null);
 
-  // TTS
   const { speak, activeIdx } = useTTS();
 
-  // Auto-scroll chat
-  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chat]);
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chat, isTyping]);
 
-  // Camera
   useEffect(() => {
     navigator.mediaDevices?.getUserMedia({ video: true })
       .then(s => { if (videoRef.current) videoRef.current.srcObject = s; })
       .catch(e => console.error('Camera denied:', e));
   }, []);
 
-  // Speech Recognition
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { setVoiceSupport(false); return; }
@@ -161,16 +171,14 @@ export default function App() {
     else { try { rec.start(); setListening(true); } catch (e) { console.warn(e); } }
   }, [listening]);
 
-  /* handleSendToBackend */
   const handleSendToBackend = useCallback(async (text) => {
     console.log('[AstroFreud] voice/text →', text);
-  
     return null;
   }, [data.identity, token]);
 
   const skipIntro = () => { introVideoRef.current?.pause(); setIntroVisible(false); };
 
-  /* Biometric scan  */
+  /* Biometric scan */
   const scanVian = async () => {
     setLoading(true); setScanFlash(true);
     setTimeout(() => setScanFlash(false), 600);
@@ -197,9 +205,9 @@ export default function App() {
     setLoading(false);
   };
 
-  /* Chat  */
   const addMsg = (role, content) => setChat(p => [...p, { role, content, time: nowTime() }]);
 
+  /* Send message */
   const sendMessage = async (e) => {
     e?.preventDefault();
     const txt = input.trim();
@@ -207,58 +215,42 @@ export default function App() {
     if (listening) toggleMic();
     addMsg('user', txt);
     setInput('');
+    setIsTyping(true);                                         // ← show typing bubble
     const voiceReply = await handleSendToBackend(txt);
     try {
-      const id = data.identity !== 'STANDBY' && data.identity !== 'Unknown Personnel' ? data.identity : 'Unknown';
+      const id = data.identity !== 'STANDBY' && data.identity !== 'Unknown Personnel'
+        ? data.identity : 'Unknown';
       const res = await fetch(`${API_BASE}/chat?identity=${encodeURIComponent(id)}&token=${token}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: [...chat, { role: 'user', content: txt }] }),
       });
       const d = await res.json();
+      setIsTyping(false);                                      // ← hide typing bubble
       if (d.message) addMsg('assistant', d.message);
       else if (voiceReply) addMsg('assistant', voiceReply);
 
-      
       if (d.phase === 'done') {
-
-  const finalMsg = d.message || "Analysis complete";
-  
-
-  addMsg('assistant', finalMsg);
-  
- 
-  speak(finalMsg, chat.length);
-
- 
-  setTimeout(() => {
-    // Reset Identity and Stats
-    setData({
-      identity: 'STANDBY',
-      mood: '---',
-      score: 0,
-      message: 'System Initializing...',
-    });
-    
-    // Clear Chat History
-    setChat([]);
-    
-    console.log(" Session Terminated. Returning to Standby.");
-  }, 8000); 
-}
+        const finalMsg = d.message || "Analysis complete";
+        addMsg('assistant', finalMsg);
+        speak(finalMsg, chat.length);
+        setTimeout(() => {
+          setData({ identity: 'STANDBY', mood: '---', score: 0, message: 'System Initializing...' });
+          setChat([]);
+        }, 9000);
+      }
     } catch {
+      setIsTyping(false);                                      // ← hide on error too
       addMsg('assistant', voiceReply || 'Uplink failure. System offline.');
     }
   };
 
   const onKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(e); };
 
-  /*  Derived */
   const isCritical  = data.score >= 12;
   const isVian      = data.identity === 'VIAN';
   const fillCls     = isCritical ? 'fill-red' : isVian ? 'fill-green' : 'fill-blue';
   const scoreNumCls = isCritical ? 'text-red'  : isVian ? 'text-green' : 'text-blue';
 
- 
   return (
     <>
       {/* Intro */}
@@ -273,7 +265,7 @@ export default function App() {
       <div className={`main-wrapper ${isCritical ? 'critical-active' : ''} ${isVian ? 'vian-active' : ''}`}>
         <div className="container">
 
-          {/* ── Header ── */}
+          {/* Header */}
           <header className="header">
             <div className="logo-group">
               <div className="logo-orb">
@@ -297,14 +289,13 @@ export default function App() {
             </div>
           </header>
 
-          {/* Dashboard grid  */}
+          {/* Dashboard grid */}
           <div className="dashboard-grid">
 
             {/* Camera */}
             <div className={`card camera-card ${scanFlash ? 'scan-flash' : ''}`}>
               <div className="card-label"><Camera size={13} /> LIVE SCAN</div>
               <div className="video-container">
-            
                 {isVian && <div className="vian-overlay">✓ VIAN</div>}
                 <video ref={videoRef} autoPlay playsInline muted className="webcam-view" />
               </div>
@@ -342,108 +333,118 @@ export default function App() {
             </div>
           </div>
 
-          {/* ── Psych-Link Terminal  */}
-          {data.identity !== 'STANDBY' && !sessionDone && <div className="card chat-card">
+          {/* Psych-Link Terminal */}
+          {data.identity !== 'STANDBY' && !sessionDone && (
+            <div className="card chat-card">
 
-            {/* WA header bar */}
-            <div className="chat-header-bar">
-              <div className="chat-header-left">
-                <div className="chat-avatar"><RobotMascot size={26} /></div>
-                <div className="chat-contact-info">
-                  <span className="chat-contact-name">AstroFreud_AI // PSYCH-LINK</span>
-                  <span className="chat-contact-status">{listening ? 'listening...' : 'online'}</span>
-                </div>
-              </div>
-              <div className="chat-header-icons">
-                {isVian && <span className="vian-tag">LINKED: VIAN</span>}
-                <ShieldAlert size={15} color="#94a3b8" />
-              </div>
-            </div>
-
-            {/* Messages */}
-            <div className="chat-history">
-              {chat.length === 0 ? (
-                <div className="empty-chat">
-                  <div className="empty-dot">◉</div>
-                  <span>Awaiting scan to initialise session...</span>
-                  <div className="mascot-corner"><RobotMascot size={52} /></div>
-                </div>
-              ) : (
-                <>
-                  <div className="date-divider">
-                    <span>{new Date().toLocaleDateString([], { weekday:'long', month:'short', day:'numeric' })}</span>
+              {/* Header bar */}
+              <div className="chat-header-bar">
+                <div className="chat-header-left">
+                  <div className="chat-avatar"><RobotMascot size={26} /></div>
+                  <div className="chat-contact-info">
+                    <span className="chat-contact-name">AstroFreud_AI // PSYCH-LINK</span>
+                    <span className="chat-contact-status">
+                      {isTyping ? 'typing...' : listening ? 'listening...' : 'online'}
+                    </span>
                   </div>
-                  {chat.map((m, i) => {
-                    const isPlaying = activeIdx === i;
-                    return (
-                      <div key={i} className={`bubble-wrap ${m.role === 'user' ? 'bubble-right' : 'bubble-left'}`}>
-                        {m.role === 'assistant' && <RobotMascot size={26} />}
-                        <div className={`bubble ${m.role === 'user' ? 'bubble-user' : 'bubble-ai'}`}>
-                          <span className="bubble-sender">
-                            {m.role === 'user' ? (data.identity !== 'STANDBY' ? data.identity : 'CREW') : 'AstroFreud_AI'}
-                          </span>
-                          <p>{m.content}</p>
-                          <div className="bubble-meta">
-                            <span className="bubble-time">{m.time}</span>
-                            {m.role === 'user' && <span className="bubble-tick">✓✓</span>}
-                            {m.role === 'assistant' && (
-                              <button
-                                className={`btn-tts ${isPlaying ? 'tts-active' : ''}`}
-                                onClick={() => speak(m.content, i)}
-                                title={isPlaying ? 'Stop' : 'Read aloud'}
-                              >
-                                {isPlaying ? <VolumeX size={11} /> : <Volume2 size={11} />}
-                              </button>
-                            )}
+                </div>
+                <div className="chat-header-icons">
+                  {isVian && <span className="vian-tag">LINKED: VIAN</span>}
+                  <ShieldAlert size={15} color="#94a3b8" />
+                </div>
+              </div>
+
+              {/* Messages */}
+              <div className="chat-history">
+                {chat.length === 0 && !isTyping ? (
+                  <div className="empty-chat">
+                    <div className="empty-dot">◉</div>
+                    <span>Awaiting scan to initialise session...</span>
+                    <div className="mascot-corner"><RobotMascot size={52} /></div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="date-divider">
+                      <span>{new Date().toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+                    </div>
+
+                    {chat.map((m, i) => {
+                      const isPlaying = activeIdx === i;
+                      return (
+                        <div key={i} className={`bubble-wrap ${m.role === 'user' ? 'bubble-right' : 'bubble-left'}`}>
+                          {m.role === 'assistant' && <RobotMascot size={26} />}
+                          <div className={`bubble ${m.role === 'user' ? 'bubble-user' : 'bubble-ai'}`}>
+                            <span className="bubble-sender">
+                              {m.role === 'user' ? (data.identity !== 'STANDBY' ? data.identity : 'CREW') : 'AstroFreud_AI'}
+                            </span>
+                            <p>{m.content}</p>
+                            <div className="bubble-meta">
+                              <span className="bubble-time">{m.time}</span>
+                              {m.role === 'user' && <span className="bubble-tick">✓✓</span>}
+                              {m.role === 'assistant' && (
+                                <button
+                                  className={`btn-tts ${isPlaying ? 'tts-active' : ''}`}
+                                  onClick={() => speak(m.content, i)}
+                                  title={isPlaying ? 'Stop' : 'Read aloud'}
+                                >
+                                  {isPlaying ? <VolumeX size={11} /> : <Volume2 size={11} />}
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                  <div ref={chatEndRef} />
-                </>
-              )}
-            </div>
+                      );
+                    })}
 
-            {/* Live transcript strip */}
-            {listening && (
-              <div className="transcript-strip">
-                <span className="transcript-dot" />
-                <span>{transcript || 'Listening for voice input...'}</span>
+                    {/* Typing indicator */}
+                    {isTyping && <TypingBubble />}
+
+                    <div ref={chatEndRef} />
+                  </>
+                )}
               </div>
-            )}
 
-            {/* Input bar */}
-            <form className="chat-input-area" onSubmit={sendMessage}>
-              {voiceSupport ? (
-                <button type="button" className={`btn-mic ${listening ? 'listening' : ''}`}
-                  onClick={toggleMic} title={listening ? 'Stop mic' : 'Voice input'}>
-                  {listening ? <MicOff size={16} /> : <Mic size={16} />}
-                </button>
-              ) : (
-                <button type="button" className="btn-mic" disabled title="Not supported">
-                  <Mic size={16} />
-                </button>
+              {/* Live transcript strip */}
+              {listening && (
+                <div className="transcript-strip">
+                  <span className="transcript-dot" />
+                  <span>{transcript || 'Listening for voice input...'}</span>
+                </div>
               )}
 
-              <input
-                className="chat-input"
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={onKeyDown}
-                placeholder={listening ? 'Dictating... press send when ready' : 'Message AstroFreud_AI...'}
-              />
+              {/* Input bar */}
+              <form className="chat-input-area" onSubmit={sendMessage}>
+                {voiceSupport ? (
+                  <button type="button" className={`btn-mic ${listening ? 'listening' : ''}`}
+                    onClick={toggleMic} title={listening ? 'Stop mic' : 'Voice input'}>
+                    {listening ? <MicOff size={16} /> : <Mic size={16} />}
+                  </button>
+                ) : (
+                  <button type="button" className="btn-mic" disabled title="Not supported">
+                    <Mic size={16} />
+                  </button>
+                )}
 
-              <button className="btn-transmit" type="submit" disabled={!input.trim()}>
-                <Send size={16} />
-              </button>
-            </form>
+                <input
+                  className="chat-input"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={onKeyDown}
+                  placeholder={listening ? 'Dictating... press send when ready' : 'Message AstroFreud_AI...'}
+                />
 
-          </div>}
+                <button className="btn-transmit" type="submit" disabled={!input.trim() || isTyping}>
+                  <Send size={16} />
+                </button>
+              </form>
+
+            </div>
+          )}
         </div>
       </div>
+
       <footer className="app-footer">
-        <span id="te">created @brisHack 2026 by Vian, Shankar, Thiruvel, Thrijwal</span>
+        <span id="te">created @ BrisHack 2026 :) </span>
       </footer>
     </>
   );
