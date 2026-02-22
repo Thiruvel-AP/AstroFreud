@@ -13,7 +13,7 @@ function useTTS() {
   const [activeIdx, setActiveIdx] = useState(null);
   const uttRef = useRef(null);
 
- 
+  // Prime voice list (async in some browsers)
   useEffect(() => { window.speechSynthesis.getVoices(); }, []);
 
   const speak = useCallback((text, idx) => {
@@ -65,6 +65,7 @@ function RobotMascot({ size = 52 }) {
 }
 
 
+
 function IdentityBadge({ identity, isCritical }) {
   const isVian    = identity === 'VIAN';
   const isUnknown = identity === 'Unknown Personnel' || identity === 'Unknown';
@@ -85,8 +86,7 @@ function IdentityBadge({ identity, isCritical }) {
   );
 }
 
-/* HELPERS
-*/
+
 const nowTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 const API_BASE = 'http://localhost:8000';
 
@@ -161,10 +161,10 @@ export default function App() {
     else { try { rec.start(); setListening(true); } catch (e) { console.warn(e); } }
   }, [listening]);
 
-  /* handleSendToBackend*/
+  /* handleSendToBackend */
   const handleSendToBackend = useCallback(async (text) => {
     console.log('[AstroFreud] voice/text →', text);
-    
+  
     return null;
   }, [data.identity, token]);
 
@@ -197,7 +197,7 @@ export default function App() {
     setLoading(false);
   };
 
-  /* Chat */
+  /* Chat  */
   const addMsg = (role, content) => setChat(p => [...p, { role, content, time: nowTime() }]);
 
   const sendMessage = async (e) => {
@@ -218,15 +218,18 @@ export default function App() {
       if (d.message) addMsg('assistant', d.message);
       else if (voiceReply) addMsg('assistant', voiceReply);
 
-      // Backend signals end of psych session 
+      
       if (d.phase === 'done') {
+
+  const finalMsg = d.message || "Analysis complete";
+  
+
+  addMsg('assistant', finalMsg);
+  
  
-  const finalMsg = d.message || "Analysis complete.";
-  
-  
   speak(finalMsg, chat.length);
 
-
+ 
   setTimeout(() => {
     // Reset Identity and Stats
     setData({
@@ -240,7 +243,7 @@ export default function App() {
     setChat([]);
     
     console.log(" Session Terminated. Returning to Standby.");
-  }, 13000); 
+  }, 8000); 
 }
     } catch {
       addMsg('assistant', voiceReply || 'Uplink failure. System offline.');
@@ -249,13 +252,13 @@ export default function App() {
 
   const onKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(e); };
 
-  //  Derived  
+  /*  Derived */
   const isCritical  = data.score >= 12;
   const isVian      = data.identity === 'VIAN';
   const fillCls     = isCritical ? 'fill-red' : isVian ? 'fill-green' : 'fill-blue';
   const scoreNumCls = isCritical ? 'text-red'  : isVian ? 'text-green' : 'text-blue';
 
- //render
+ 
   return (
     <>
       {/* Intro */}
@@ -294,7 +297,7 @@ export default function App() {
             </div>
           </header>
 
-          {//Dashboard grid }
+          {/* Dashboard grid  */}
           <div className="dashboard-grid">
 
             {/* Camera */}
@@ -339,7 +342,7 @@ export default function App() {
             </div>
           </div>
 
-
+          {/* ── Psych-Link Terminal  */}
           {data.identity !== 'STANDBY' && !sessionDone && <div className="card chat-card">
 
             {/* WA header bar */}
