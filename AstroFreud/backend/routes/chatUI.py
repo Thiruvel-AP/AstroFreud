@@ -4,6 +4,9 @@ from models.request_models import ChatRequest
 import datetime
 from Agents.Memory import ARESState
 from Agents.CoreAgent import build_ares_graph
+from services.criticality import decisionMakingForEmail
+from services.emailingservice import getSessionData, send_astro_email
+from config_loader import configLoader
 
 router = APIRouter()
 
@@ -61,6 +64,16 @@ async def chat(req: ChatRequest, identity: str = "Unknown", token: str = ""):
     # ── persist or wipe session ───────────────────────────────────────────────
     if result.get("is_done"):
         print(f"[ARES] Session complete for {session_key}.")
+        qa_store = result.get("qa_store", {})
+        last_key = max(qa_store.keys())
+        last_score = qa_store[last_key]["score"]
+        emailcond = decisionMakingForEmail(last_score)
+        if emailcond:
+            conf = configLoader()
+            chatdatafilepath = getSessionData(session_key)
+            recipient_email = conf['email']['recipent']
+            send_astro_email(recipient_email, chatdatafilepath)
+
         session_store.delete(session_key)
     else:
         session_store.set(session_key, result)

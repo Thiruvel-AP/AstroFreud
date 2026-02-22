@@ -25,3 +25,10 @@ logging:
   logpath: logs/
   backendfile: backend.log
   frontendfile: frontend.log 
+
+jsonPath:
+  path: data/
+  file: sessions.json
+
+email:
+  recipent: shankarnarayana92@gmail.com

@@ -1,0 +1,54 @@
+{
+  "session_key": "VIAN",
+  "display_identity": "VIAN",
+  "phase": "followup",
+  "current_q_index": 4,
+  "qa_store": {
+    "0": {
+      "question": "How has your sleep quality been over the last two cycles?",
+      "answer": "very bad",
+      "score": 14,
+      "situation": "high",
+      "condition": "Call the captain and the ground station"
+    },
+    "1": {
+      "question": "Are you experiencing any difficulty focusing on mission objectives?",
+      "answer": "yes",
+      "score": 12,
+      "situation": "high",
+      "condition": "Call the captain and the ground station"
+    },
+    "2": {
+      "question": "Do you feel a sense of disconnection from the crew or mission control?",
+      "answer": "yes very much",
+      "score": 14,
+      "situation": "high",
+      "condition": "Call the captain and the ground station"
+    },
+    "3": {
+      "question": "How would you describe your emotional state compared to mission launch day?",
+      "answer": "very very bad",
+      "score": 14,
+      "situation": "high",
+      "condition": "Call the captain and the ground station"
+    }
+  },
+  "followup_question": "Have you noticed any changes in your breathing pattern or heart rate during these episodes?",
+  "followup_count": 5,
+  "final_report": "",
+  "overall_situation": "high",
+  "user_answer": "yes",
+  "reply": "Have you noticed any changes in your breathing pattern or heart rate during these episodes?",
+  "is_done": false,
+  "score_result": {
+    "score": 14,
+    "situation": "high",
+    "condition": "Call the captain and the ground station"
+  },
+  "is_relevant": true,
+  "psych_result": {
+    "type": "followup",
+    "content": "Have you noticed any changes in your breathing pattern or heart rate during these episodes?"
+  },
+  "pending_log": null
+}
