@@ -192,5 +192,59 @@
     "is_relevant": false,
     "psych_result": {},
     "pending_log": null
+  },
+  "unknown_cmv7e8g": {
+    "session_key": "unknown_cmv7e8g",
+    "display_identity": "unknown_cmv7e8g",
+    "phase": "followup",
+    "current_q_index": 4,
+    "qa_store": {
+      "0": {
+        "question": "How has your sleep quality been over the last two cycles?",
+        "answer": "I'm not feeling good",
+        "score": 12,
+        "situation": "high",
+        "condition": "Call the captain and the ground station"
+      },
+      "1": {
+        "question": "Are you experiencing any difficulty focusing on mission objectives?",
+        "answer": "no",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "2": {
+        "question": "Do you feel a sense of disconnection from the crew or mission control?",
+        "answer": "no",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      },
+      "3": {
+        "question": "How would you describe your emotional state compared to mission launch day?",
+        "answer": "its good",
+        "score": 4,
+        "situation": "low",
+        "condition": "internal decision"
+      }
+    },
+    "followup_question": "Can you describe what's been keeping you awake during those sleepless nights?",
+    "followup_count": 1,
+    "final_report": "",
+    "overall_situation": "high",
+    "user_answer": "its good",
+    "reply": "Can you describe what's been keeping you awake during those sleepless nights?",
+    "is_done": false,
+    "score_result": {
+      "score": 4,
+      "situation": "low",
+      "condition": "internal decision"
+    },
+    "is_relevant": true,
+    "psych_result": {
+      "type": "followup",
+      "content": "Can you describe what's been keeping you awake during those sleepless nights?"
+    },
+    "pending_log": null
   }
 }

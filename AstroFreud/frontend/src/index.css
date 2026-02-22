@@ -11,16 +11,16 @@
 ══════════════════════════ */
 :root {
   /* ── Background ── */
-  --bg-base:       #020617;
+  --bg-base:       #000000;
 
   /* ── Glass surface (spec §2 + §6) ── */
-  --glass-bg:      rgba(23, 37, 84, 0.45);       /* §6 deep-navy blue tint  */
-  --glass-border:  rgba(147, 197, 253, 0.20);    /* §6 light-blue stroke    */
+  --glass-bg:      rgba(79, 133, 72, 0.45);       /* §6 deep-navy blue tint  */
+  --glass-border:  rgba(0, 70, 151, 0.2);    /* §6 light-blue stroke    */
   --glass-blur:    blur(12px) saturate(180%);     /* §2 backdrop filter      */
   --glass-shadow:  0 8px 32px 0 rgba(0,0,0,0.80);/* §2 shadow               */
 
   /* ── Functional accents ── */
-  --cyan:          #22d3ee;                       /* §3 primary cyan         */
+  --cyan:          #d9f600;                       /* §3 primary cyan         */
   --cyan-glow:     drop-shadow(0 0 8px #22d3ee); /* §3 neon effect          */
   --cyan-box:      0 0 16px rgba(34,211,238,0.45),0 0 32px rgba(34,211,238,0.20);
   --cyan-dim:      rgba(34,211,238,0.10);
@@ -31,12 +31,12 @@
   --green-border:  rgba(74,222,128,0.38);
   --green-glow:    0 0 14px rgba(74,222,128,0.50);
 
-  --blue:          #38bdf8;                       /* §3 status blue          */
+  --blue:          #034efe;                       /* §3 status blue          */
   --blue-dim:      rgba(56,189,248,0.10);
   --blue-border:   rgba(56,189,248,0.38);
   --blue-glow:     0 0 14px rgba(56,189,248,0.45);
 
-  --mint-bg:       rgba(167,243,208,0.30);        /* §3 personnel ID 30%     */
+  --mint-bg:       rgba(0, 0, 0, 0.649);        /* §3 personnel ID 30%     */
   --mint-text:     #ecfdf5;                       /* §3 personnel text       */
   --mint-border:   rgba(167,243,208,0.28);
 
@@ -82,6 +82,24 @@ body{
   background:var(--bg-base);
   color:var(--text-primary);
   min-height:100vh;overflow-x:hidden;
+}
+.app-footer {
+  width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center; /* Horizontal center */
+  align-items: center;     /* Vertical center */
+  margin-top: auto;        /* Pushes footer to bottom if using flex-column */
+}
+
+/* The Text Style */
+#te {
+  font-size: 0.75rem;       /* Makes it small */
+  color: #94a3b8;          /* A muted slate gray to match the sci-fi theme */
+  text-transform: uppercase; /* Keeps the "terminal" aesthetic */
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  font-family: 'Courier New', monospace; /* Optional: matches the robot/tech vibe */
 }
 
 /* ══════════════════════════ INTRO ══════════════════════════ */
@@ -131,7 +149,7 @@ body{
 .logo-group{display:flex;align-items:center;gap:14px}
 .logo-orb{
   width:46px;height:46px;border-radius:50%;
-  background:linear-gradient(135deg,#0c1d4a,#172554);
+  background:linear-gradient(135deg,#0c344a,#4f5417);
   border:1.5px solid var(--cyan-border);
   display:flex;align-items:center;justify-content:center;
   box-shadow:var(--cyan-box);
@@ -199,7 +217,7 @@ body{
 .card:hover{
   transform:translateY(-4px);
   box-shadow:var(--glass-shadow),var(--lb-glow);
-  border-color:rgba(147,197,253,0.32);
+  border-color:rgba(211, 147, 253, 0.32);
 }
 @keyframes cardUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .dashboard-grid .card:nth-child(1){animation-delay:.08s}
@@ -223,17 +241,6 @@ body{
 }
 .webcam-view{width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);border-radius:var(--r-md)}
 
-/* Corner brackets */
-.video-container::before,
-.video-container::after{content:'';position:absolute;width:18px;height:18px;z-index:3}
-.video-container::before{
-  top:8px;left:8px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);
-  border-radius:4px 0 0 0;box-shadow:-2px -2px 10px rgba(34,211,238,.50);
-}
-.video-container::after{
-  bottom:8px;right:8px;border-bottom:2px solid var(--blue);border-right:2px solid var(--blue);
-  border-radius:0 0 4px 0;box-shadow:2px 2px 10px rgba(56,189,248,.45);
-}
 
 .vian-overlay{
   position:absolute;top:10px;left:10px;
@@ -244,17 +251,6 @@ body{
 }
 @keyframes overlayPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
 
-/* Scan beam */
-.scan-lines-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:var(--r-md);z-index:2}
-.scan-static-line{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,.30),transparent)}
-.scan-beam{
-  position:absolute;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--cyan),rgba(34,211,238,.8),var(--cyan),transparent);
-  box-shadow:0 0 14px rgba(34,211,238,.60),0 0 28px rgba(34,211,238,.25);
-  animation:scanDown 3.5s ease-in-out infinite;
-  filter:var(--cyan-glow);
-}
-@keyframes scanDown{0%{top:0%;opacity:0}8%{opacity:1}92%{opacity:.85}100%{top:100%;opacity:0}}
 
 /* ══════════════════════════ STATS COLUMN ══════════════════════════ */
 .stats-column{display:flex;flex-direction:column;gap:14px}
@@ -282,7 +278,7 @@ body{
   width:46px;height:46px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.badge-standby .badge-icon-wrap{background:rgba(167,243,208,.12);color:var(--mint-text);border:1px solid var(--mint-border)}
+.badge-standby .badge-icon-wrap{background:rgba(167, 243, 229, 0.12);color:var(--mint-text);border:1px solid var(--mint-border)}
 .badge-vian    .badge-icon-wrap{background:rgba(74,222,128,.14);color:var(--green);border:1px solid var(--green-border);box-shadow:var(--green-glow)}
 .badge-unknown .badge-icon-wrap{background:var(--red-dim);color:var(--red-soft);border:1px solid var(--red-border)}
 
@@ -309,7 +305,7 @@ body{
 .score-track{height:9px;background:rgba(0,0,0,.55);border-radius:var(--r-full);overflow:hidden;border:1px solid var(--lb-border)}
 .score-fill{height:100%;border-radius:var(--r-full);transition:width 1s cubic-bezier(.25,1,.5,1)}
 .fill-green  {background:linear-gradient(90deg,rgba(74,222,128,.3),var(--green));box-shadow:var(--green-glow)}   /* §3 status green */
-.fill-blue   {background:linear-gradient(90deg,rgba(56,189,248,.3),var(--blue)); box-shadow:var(--blue-glow)}
+.fill-blue   {background:linear-gradient(90deg,rgba(248, 171, 56, 0.616),var(--blue)); box-shadow:var(--blue-glow)}
 .fill-red    {background:linear-gradient(90deg,rgba(239,68,68,.3),var(--red));   box-shadow:var(--red-glow)}
 
 /* Mood */
@@ -361,7 +357,7 @@ body{
 .chat-header-bar{
   display:flex;align-items:center;justify-content:space-between;
   padding:12px 18px;background:var(--wa-header);
-  border-bottom:1px solid rgba(147,197,253,.10);
+  border-bottom:1px solid rgba(147, 196, 253, 0.466);
 }
 .chat-header-left{display:flex;align-items:center;gap:10px}
 .chat-avatar{
@@ -431,7 +427,7 @@ body{
 }
 .bubble-user{
   background:var(--wa-sent);
-  border:1px solid rgba(74,222,128,.18);
+  border:1px solid rgba(91, 222, 74, 0.18);
   border-radius:8px 8px 2px 8px;
   box-shadow:0 1px 4px rgba(0,0,0,.50);
 }
@@ -453,8 +449,8 @@ body{
 .bubble-user .bubble-sender{color:var(--green)}
 .bubble-ai   .bubble-sender{color:var(--cyan)}
 .bubble-meta{position:absolute;bottom:4px;right:10px;display:flex;align-items:center;gap:3px}
-.bubble-time{font-size:.58rem;color:var(--wa-time);font-family:var(--font-body)}
-.bubble-tick{font-size:.7rem;color:var(--wa-tick);line-height:1}
+.bubble-time{font-size:.45rem;color:var(--wa-time);font-family:var(--font-body)}
+.bubble-tick{font-size:.4rem;color:var(--wa-tick);line-height:1}
 
 /* ── TTS (read-aloud) button inside AI bubble ── */
 .btn-tts{
@@ -462,7 +458,7 @@ body{
   width:20px;height:20px;border-radius:50%;
   background:rgba(34,211,238,0.08);
   border:1px solid rgba(34,211,238,0.22);
-  color:rgba(34,211,238,0.55);
+  color:rgba(71, 238, 34, 0.55);
   cursor:pointer;padding:0;margin-left:2px;
   transition:all .25s var(--ease-out);
   vertical-align:middle;
@@ -506,7 +502,7 @@ body{
 .btn-transmit{
   width:42px;height:42px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#065f46,#0c4a6e);
+  background:linear-gradient(135deg,#d4ff00,#2bff00);
   border:1px solid var(--green-border);cursor:pointer;
   box-shadow:var(--green-glow);color:#fff;
   transition:all .3s var(--ease-spring);flex-shrink:0;
@@ -526,7 +522,7 @@ body{
 .btn-mic{
   width:42px;height:42px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(23,37,84,.7);
+  background:rgba(57, 64, 88, 0.7);
   border:1px solid var(--lb-border);cursor:pointer;
   color:var(--text-secondary);
   transition:all .3s var(--ease-spring);flex-shrink:0;
@@ -562,13 +558,13 @@ body{
 /* ══════════════════════════ ROBOT MASCOT ══════════════════════════ */
 .robot-mascot{position:relative;display:flex;flex-direction:column;align-items:center;
   filter:drop-shadow(0 0 8px rgba(34,211,238,.55)) drop-shadow(0 0 16px rgba(56,189,248,.30));flex-shrink:0}
-.robot-head{background:linear-gradient(135deg,#0c1d4a,#172554);border:1.5px solid var(--cyan-border);
+.robot-head{background:linear-gradient(135deg,#0c1d4a,#e100fff5);border:1.5px solid var(--cyan-border);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .robot-eyes{display:flex;gap:6px}
 .robot-eye{background:var(--cyan);border-radius:50%;box-shadow:0 0 6px var(--cyan),0 0 12px rgba(34,211,238,.4);animation:robotBlink 3.5s ease-in-out infinite}
 @keyframes robotBlink{0%,88%,100%{transform:scaleY(1)}93%{transform:scaleY(.08)}}
 .robot-mouth{background:rgba(34,211,238,.2);border:1px solid var(--cyan-border);border-radius:3px}
-.robot-body{background:linear-gradient(135deg,#0c1d4a,#0c2a1a);border:1.5px solid var(--lb-border);
+.robot-body{background:linear-gradient(135deg,#0c1d4a,#ffe600);border:1.5px solid var(--lb-border);
   display:flex;align-items:center;justify-content:center}
 .robot-core-ring{border-radius:50%;border:2px solid rgba(56,189,248,.3);display:flex;align-items:center;justify-content:center}
 .robot-core{border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--blue));

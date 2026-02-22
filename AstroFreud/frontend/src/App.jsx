@@ -68,19 +68,6 @@ function RobotMascot({ size = 52 }) {
   );
 }
 
-/* ════════════════════════════════
-   SCAN LINES
-════════════════════════════════ */
-function ScanLines() {
-  return (
-    <div className="scan-lines-wrap">
-      {[15, 35, 55, 75, 92].map((p, i) => (
-        <div key={i} className="scan-static-line" style={{ top: `${p}%`, opacity: 0.06 + i * 0.02 }} />
-      ))}
-      <div className="scan-beam" />
-    </div>
-  );
-}
 
 /* ════════════════════════════════
    IDENTITY BADGE
@@ -98,7 +85,7 @@ function IdentityBadge({ identity, isCritical }) {
         <span className="badge-label-tag">PERSONNEL ID</span>
         <span className="badge-name">{identity}</span>
         <span className="badge-status">
-          {isVian ? '● IDENTITY CONFIRMED' : isUnknown ? '● UNRECOGNISED SUBJECT' : '● AWAITING BIOMETRICS'}
+          {isVian ? '● IDENTITY CONFIRMED' : isUnknown ? '● UNRECOGNISED SUBJECT' : '● AWAITING...'}
         </span>
       </div>
     </div>
@@ -215,12 +202,12 @@ export default function App() {
       addMsg('assistant',
         r.identity === 'VIAN'
           ? `Identity confirmed: VIAN. Affect — ${(r.mood || 'neutral').toUpperCase()}. Stress Index: ${r.score}/20. Monitoring active.`
-          : `Unrecognised biometric signature. Stress Index: ${r.score}/20. Proceeding as anonymous subject.`
+          : `Unrecognised scan. Stress Index: ${r.score}/20. Proceeding as anonymous subject.`
       );
       if (r.score >= 12) addMsg('assistant', `⚠ ALERT: Elevated ${(r.mood || '').toUpperCase()} detected. ${r.identity}, report status immediately.`);
     } catch {
       setData(p => ({ ...p, message: 'CONNECTION ERROR' }));
-      addMsg('assistant', 'Biometric uplink failed. Check backend on port 8000.');
+      addMsg('assistant', 'Scan uplink failed. Check backend on port 8000.');
     }
     setLoading(false);
   };
@@ -248,9 +235,34 @@ export default function App() {
 
       // Backend signals end of psych session → hide chat, then full page reset
       if (d.phase === 'done') {
-        setSessionDone(true);                          // chat box disappears instantly
-        setTimeout(() => window.location.reload(), 3200); // reload wipes everything
-      }
+  // Use the actual message returned by the AI assistant
+  const finalMsg = d.message || "Analysis complete.";
+  
+  // 1. Add the assistant's final message to the chat
+  //addMsg('assistant', finalMsg);
+  
+  // 2. Read it aloud immediately
+  // We use chat.length to target the bubble index correctly for the speaker icon
+  speak(finalMsg, chat.length);
+
+  // 3. Timing Calculation: 
+  // Most sentences take ~3-4 seconds to speak at rate 0.92. 
+  // We add 2 seconds of "standby" time as requested. Total: 6 seconds.
+  setTimeout(() => {
+    // Reset Identity and Stats
+    setData({
+      identity: 'STANDBY',
+      mood: '---',
+      score: 0,
+      message: 'System Initializing...',
+    });
+    
+    // Clear Chat History
+    setChat([]);
+    
+    console.log(" Session Terminated. Returning to Standby.");
+  }, 13000); 
+}
     } catch {
       addMsg('assistant', voiceReply || 'Uplink failure. System offline.');
     }
@@ -289,7 +301,7 @@ export default function App() {
               </div>
               <div className="brand-text">
                 <h1 className="title">AstroFreud</h1>
-                <span className="version">v0 // COMMAND_HUB</span>
+                <span className="version">v0 </span>
               </div>
             </div>
             <div className="header-right">
@@ -310,9 +322,9 @@ export default function App() {
 
             {/* Camera */}
             <div className={`card camera-card ${scanFlash ? 'scan-flash' : ''}`}>
-              <div className="card-label"><Camera size={13} /> LIVE BIOMETRICS</div>
+              <div className="card-label"><Camera size={13} /> LIVE SCAN</div>
               <div className="video-container">
-                <ScanLines />
+            
                 {isVian && <div className="vian-overlay">✓ VIAN</div>}
                 <video ref={videoRef} autoPlay playsInline muted className="webcam-view" />
               </div>
@@ -358,7 +370,7 @@ export default function App() {
               <div className="chat-header-left">
                 <div className="chat-avatar"><RobotMascot size={26} /></div>
                 <div className="chat-contact-info">
-                  <span className="chat-contact-name">ARES_AI // PSYCH-LINK</span>
+                  <span className="chat-contact-name">AstroFreud_AI // PSYCH-LINK</span>
                   <span className="chat-contact-status">{listening ? 'listening...' : 'online'}</span>
                 </div>
               </div>
@@ -373,7 +385,7 @@ export default function App() {
               {chat.length === 0 ? (
                 <div className="empty-chat">
                   <div className="empty-dot">◉</div>
-                  <span>Awaiting biometric scan to initialise session...</span>
+                  <span>Awaiting scan to initialise session...</span>
                   <div className="mascot-corner"><RobotMascot size={52} /></div>
                 </div>
               ) : (
@@ -388,7 +400,7 @@ export default function App() {
                         {m.role === 'assistant' && <RobotMascot size={26} />}
                         <div className={`bubble ${m.role === 'user' ? 'bubble-user' : 'bubble-ai'}`}>
                           <span className="bubble-sender">
-                            {m.role === 'user' ? (data.identity !== 'STANDBY' ? data.identity : 'CREW') : 'ARES_AI'}
+                            {m.role === 'user' ? (data.identity !== 'STANDBY' ? data.identity : 'CREW') : 'AstroFreud_AI'}
                           </span>
                           <p>{m.content}</p>
                           <div className="bubble-meta">
@@ -439,7 +451,7 @@ export default function App() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={onKeyDown}
-                placeholder={listening ? '🎙 Dictating... press send when ready' : 'Message ARES_AI...'}
+                placeholder={listening ? 'Dictating... press send when ready' : 'Message AstroFreud_AI...'}
               />
 
               <button className="btn-transmit" type="submit" disabled={!input.trim()}>
@@ -450,6 +462,9 @@ export default function App() {
           </div>}
         </div>
       </div>
+      <footer className="app-footer">
+        <span id="te">created @brisHack 2026 by Vian, Shankar, Thiruvel, Thrijwal</span>
+      </footer>
     </>
   );
 }
